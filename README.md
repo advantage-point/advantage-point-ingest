@@ -199,13 +199,47 @@ subgraph control_table_view_source_X[Control Table View Source X]
 end
 
 
-control_table_view_master[Master Control Table View]
+control_object_master[Master Control Object]
 
-control_table_source_1_entity_1 --> control_table_view_source_1_entity_1 --> control_table_view_master
-control_table_source_1_entity_M --> control_table_view_source_1_entity_M --> control_table_view_master
-control_table_source_X_entity_1 --> control_table_view_source_X_entity_1 --> control_table_view_master
-control_table_source_X_entity_N --> control_table_view_source_X_entity_N --> control_table_view_master
+control_table_source_1_entity_1 --> control_table_view_source_1_entity_1 --> control_object_master
+control_table_source_1_entity_M --> control_table_view_source_1_entity_M --> control_object_master
+control_table_source_X_entity_1 --> control_table_view_source_X_entity_1 --> control_object_master
+control_table_source_X_entity_N --> control_table_view_source_X_entity_N --> control_object_master
 ```
+
+The flow/roles of these control objects are:
+1. `control table`
+    - Contains necessary ingestion information for each source/entity.
+    - If calculations/value patterns are observed/needed, then they should go in `control table view` and/or `control object master.`
+2. `control table view`
+    - Contains additional source-specific logic.
+        - `control_table_table_name`: Underlying control table
+        - `bigquery_target_table_id`: While this column appears in all `control table view`s, the logic may differ, so it should be constructed in this object
+3. `control object master`
+    - Contains column logic common among all control table views. Either:
+        - Column logic must be the same
+        - Column calculations done in `control table view` and column is referenced in `control object master`.
+    - Contains same column but different logic:
+        - `control_table_view_name`
+    - Contains logic common among all `control table view`s:
+        - `biquery_temp_project_id`
+        - `bigquery_temp_dataset_id`
+        - `bigquery_temp_table_id`
+        - `is_active`
+
+The general flow is:
+1. Create a table to store source/entity information.
+2. Create a view on top of the table to create/override column values.
+3. Create a view/table on top of the views from step 2 that unions all views.
+
+This way
+
+Some flexibility can be done:
+- If _source 1_ and _source X_ contain similar ingestion processes/logic, it may make sense to either create one control table for both _source 1_ and _source X_ entity records or UNION both control tables into a single control table view.
+- If the query in the master control object (if view) requires a lot of compute, then it may make sense to CREATE/REPLACE a table using the desired query.
+- Building a view on top of a table gives the flexiblity of:
+    - Hardcoding a column value in the view rather than adding/updating a column/value in the table's INSERT statement. Note that if values may differ between entities, then either a CASE WHEN statement can be used within the view (if simple enough) or reinserting/updating the table records.
+    - If a 'simple' calculation is needed to create a new column OR to overwrite the underlying table column, then the calculation can occur within the view without the need to update the record's table entry.
 
 ---
 
