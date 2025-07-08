@@ -12,6 +12,40 @@ The system ingests data from external sources (e.g., Web, APIs or Excel files) o
 
 ## Architecture Components
 
+| Name | Type | Description |
+|---|---|---|
+| `repo-advpoint` | GitHub Repository | Stores Python-based ingestion code. |
+| `sa-advpoint-env-ingest` | Service Account | Used to run Google Cloud ingestion processes. | 
+| `cb-advpoint-env-ingest` | Cloud Build | Triggers Docker container build on GitHub repo branch push. Deploys repo code to Google Cloud. |
+| `ar-advpoint-env-ingest` | Artifact Registry | Stores Docker container image. |
+| N/A | Secrets Manager | Stores project secrets. |
+
+`sa-advpoint-env-ingest` needs the following roles:
+- `Logs Writer`: write logs to Cloud Logging
+- `Logs Viewer`: read logs
+- `Artifact Registry Writer`: upload artifacts to Artifact Registry
+
+```mermaid
+graph LR
+
+%% === CI/CD Layer ===
+subgraph CI_CD[CI/CD & Source Control]
+    github_branch[GitHub Repository]
+    cb-advpoint-env-ingest[Cloud Build]
+    ar-advpoint-env-ingest[Artifact Registry]
+end
+
+
+%% === Flows ===
+github_branch -->|push triggers| cb-advpoint-env-ingest
+cb-advpoint-env-ingest -->|build + push image| ar-advpoint-env-ingest
+
+%% === IAM Bindings ===
+sa-advpoint-env-ingest -->|access| sm-advpoint-env-api-key
+
+```
+
+
 | Name | Type | Description | IAM / Permissions Required | Notes |
 |---|---|---|---|---|
 | `proj-ingest` | GitHub Repository | Stores Python-based ingestion code | N/A | GitHub triggers Cloud Build via branch push |
@@ -88,6 +122,90 @@ sa-advpoint-env-ingest -->|access| bq-advpoint-env-ingest
    - Ingests data from source
    - Optionally stages files in Cloud Storage
    - Writes final data to BigQuery
+
+---
+
+## Data Flow Overview
+
+```mermaid
+graph LR
+
+subgraph source_1[Source 1]
+    source_1_entity_1[Source 1 Entity 1]
+    source_1_entity_M[Source 1 Entity M]
+end
+
+subgraph source_X[Source X]
+    source_X_entity_1[Source X Entity 1]
+    source_X_entity_N[Source X Entity N]
+end
+
+subgraph bq_temp[BigQuery Temp]
+    bq_temp_source_1_entity_1[Source 1 Entity 1]
+    bq_temp_source_1_entity_M[Source 1 Entity M]
+    bq_temp_source_X_entity_1[Source X Entity 1]
+    bq_temp_source_X_entity_N[Source X Entity N]
+end
+
+subgraph bq[BigQuery Target]
+    bq_source_1_entity_1[Source 1 Entity 1]
+    bq_source_1_entity_M[Source 1 Entity M]
+    bq_source_X_entity_1[Source X Entity 1]
+    bq_source_X_entity_N[Source X Entity N]
+end
+
+source_1 -->|custom load to| bq_temp -->|compared with| bq
+source_1_entity_1 --> bq_temp_source_1_entity_1 --> bq_source_1_entity_1
+source_1_entity_M --> bq_temp_source_1_entity_M --> bq_source_1_entity_M
+source_X_entity_1 --> bq_temp_source_X_entity_1 --> bq_source_X_entity_1
+source_X_entity_N --> bq_temp_source_X_entity_N --> bq_source_X_entity_N
+
+
+```
+
+1. Data is retrieved from each source and sent to a BigQuery 'temporary' table.
+    - Each source may have its own custom data retrieval method depending on the source type (ex. API, SQL, Excel).
+    - The temporary table is meant to contain data from the current ingestion process run.
+    - The ingesiton process run may perform a full (grab all records) or incremental (grab new/modified records) load, depending on preferences, optimizations, constraints, and limitations by the source system as well as Google Cloud.
+2. Data in the temporary table is compared to that in the target table.
+    - Schema drift is handled.
+    - Inserts, updates, deletions are handled.
+
+---
+
+## BigQuery
+
+```mermaid
+graph LR
+
+subgraph control_table_source_1[Control Table Source 1]
+    control_table_source_1_entity_1[Source 1 Entity 1]
+    control_table_source_1_entity_M[Source 1 Entity M]
+end
+
+subgraph control_table_view_source_1[Control Table View Source 1]
+    control_table_view_source_1_entity_1[Source 1 Entity 1]
+    control_table_view_source_1_entity_M[Source 1 Entity M]
+end
+
+subgraph control_table_source_X[Control Table Source X]
+    control_table_source_X_entity_1[Source 1 Entity 1]
+    control_table_source_X_entity_N[Source 1 Entity N]
+end
+
+subgraph control_table_view_source_X[Control Table View Source X]
+    control_table_view_source_X_entity_1[Source 1 Entity 1]
+    control_table_view_source_X_entity_N[Source 1 Entity N]
+end
+
+
+control_table_view_master[Master Control Table View]
+
+control_table_source_1_entity_1 --> control_table_view_source_1_entity_1 --> control_table_view_master
+control_table_source_1_entity_M --> control_table_view_source_1_entity_M --> control_table_view_master
+control_table_source_X_entity_1 --> control_table_view_source_X_entity_1 --> control_table_view_master
+control_table_source_X_entity_N --> control_table_view_source_X_entity_N --> control_table_view_master
+```
 
 ---
 
