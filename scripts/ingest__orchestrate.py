@@ -1,4 +1,4 @@
-from utils.bigquery.create_datasets import create_datasets
+from scripts.create_datasets import create_datasets
 import logging
 
 def main():
