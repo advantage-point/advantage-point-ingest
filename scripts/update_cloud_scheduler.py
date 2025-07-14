@@ -83,7 +83,7 @@ def main():
     cloud_scheduler_job_list = [
         job for job in cloud_scheduler_job_list
         if any(prefix in job['name'] for prefix in cloud_scheduler_prefix_list)
-        and 'orchestrate' not in job['name'] # exclude the 'orchestrate' job
+        and 'update-google-cloud' not in job['name'] # exclude the 'update-google-cloud' job
     ]
 
     # build lookup dictionaries
