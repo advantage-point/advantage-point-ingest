@@ -18,7 +18,9 @@ The system ingests data from external sources (e.g., Web, APIs or Excel files) o
 | `sa-advpoint-env-ingest` | Service Account | Used to run Google Cloud ingestion processes. | 
 | `cb-advpoint-env-ingest` | Cloud Build | Triggers Docker container build on GitHub repo branch push. Deploys repo code to Google Cloud. |
 | `ar-advpoint-env-ingest` | Artifact Registry | Stores Docker container image. |
+| `cr-advpoint-env-ingest` | Cloud Run Service | Executes ingestion logic via container image from Artifact Registry. |
 | N/A | Secrets Manager | Stores project secrets. |
+
 
 `sa-advpoint-env-ingest` needs the following roles:
 - `Logs Writer`: write logs to Cloud Logging
@@ -232,14 +234,22 @@ The general flow is:
 2. Create a view on top of the table to create/override column values.
 3. Create a view/table on top of the views from step 2 that unions all views.
 
-This way
-
 Some flexibility can be done:
 - If _source 1_ and _source X_ contain similar ingestion processes/logic, it may make sense to either create one control table for both _source 1_ and _source X_ entity records or UNION both control tables into a single control table view.
 - If the query in the master control object (if view) requires a lot of compute, then it may make sense to CREATE/REPLACE a table using the desired query.
 - Building a view on top of a table gives the flexiblity of:
     - Hardcoding a column value in the view rather than adding/updating a column/value in the table's INSERT statement. Note that if values may differ between entities, then either a CASE WHEN statement can be used within the view (if simple enough) or reinserting/updating the table records.
     - If a 'simple' calculation is needed to create a new column OR to overwrite the underlying table column, then the calculation can occur within the view without the need to update the record's table entry.
+
+
+| Column | control_table__ingest__{source} | vw__control_table__ingest__{source} | control_object__ingest__master |
+|---|---|---|---|
+| id | created in this object | selected in this object to join to other control objects | selected in this object to join to other control objects |
+| source-specific columns | inserted/updated in this object | selected in this object so that additional source-specific columns/logic is applied | 
+| biquery target project and dataset columns | inserted/updated in this object | selected in this object |
+| bigquery target table columns | N/A | created in this object as it depends on source-specific data | selected in this object |
+| bigquery temp project, dataset, table columns | N/A | created in this object as it is based on target table data and logic is same regardless of source |
+
 
 ---
 

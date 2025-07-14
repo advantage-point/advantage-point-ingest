@@ -1,0 +1,60 @@
+from google.cloud import scheduler_v1
+from typing import Dict
+import logging
+
+
+def create_cloud_scheduler_job(
+    project_id: str,
+    region: str,
+    job_name: str,
+    job_id: str,
+    job_payload: Dict
+):
+    """
+    Arguments:
+    - project_id: Google Cloud project ID
+    - region: Google Cloud region
+    - job_name: Full Cloud Scheduler job name (e.g., projects/{project_id}/locations/{region}/jobs/{job_id})
+    - job_id: Cloud Scheduler job id
+    - job_payload: Cloud Scheduler job configuration as a dictionary
+
+    Creates a new Cloud Scheduler job using the given config.
+    """
+    try:
+        client = scheduler_v1.CloudSchedulerClient()
+        parent = f"projects/{project_id}/locations/{region}"
+
+        # Build the Job object from the job_payload
+        job = scheduler_v1.Job(
+            name=job_name,
+            schedule=job_payload["schedule"],
+            time_zone=job_payload["time_zone"],
+            http_target=scheduler_v1.HttpTarget(
+                uri=job_payload["http_target"]["uri"],
+                http_method=scheduler_v1.HttpMethod[job_payload["http_target"]["http_method"]],
+                headers=job_payload["http_target"]["headers"],
+                oauth_token=scheduler_v1.OAuthToken(
+                    service_account_email=job_payload["http_target"]["oauth_token"]["service_account_email"]
+                )
+            ),
+            retry_config=scheduler_v1.RetryConfig(
+                max_retry_duration=job_payload["retry_config"]["max_retry_duration"],
+                min_backoff_duration=job_payload["retry_config"]["min_backoff_duration"],
+                max_backoff_duration=job_payload["retry_config"]["max_backoff_duration"],
+                max_doublings=job_payload["retry_config"]["max_doublings"],
+            ),
+            attempt_deadline=job_payload["attempt_deadline"]
+        )
+
+        # Create the job
+        response = client.create_job(
+            request={
+                "parent": parent,
+                "job": job,
+                "job_id": job_id
+            }
+        )
+        logging.info(f"Cloud Scheduler job {job_name} created successfully in {project_id}/{region}.")
+
+    except Exception as e:
+        logging.error(f"Error when creating Cloud Scheduler job {job_name}: {e}")

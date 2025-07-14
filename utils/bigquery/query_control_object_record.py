@@ -13,7 +13,7 @@ def query_control_object_record(
     Arguments:
     - target_table_id: Target table id
 
-    Queries/combines control object data for target table record.
+    Queries/combines control object data for target table record (regardless of is_active).
     """
 
     try:
