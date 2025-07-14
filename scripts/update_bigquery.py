@@ -76,3 +76,11 @@ def create_datasets():
     except Exception as e:
         logging.error(f"Error with datasets creation: {e}.")
         raise
+
+def main():
+    
+    # create datasets
+    create_datasets()
+
+if __name__ == '__main__':
+    main()
