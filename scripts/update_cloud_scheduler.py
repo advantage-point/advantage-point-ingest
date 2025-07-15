@@ -155,7 +155,6 @@ def main():
                     create_cloud_scheduler_job(
                         project_id=project_id,
                         region=region,
-                        job_name=job_name,
                         job_id=job_id,
                         job_payload=job_payload
                     )
