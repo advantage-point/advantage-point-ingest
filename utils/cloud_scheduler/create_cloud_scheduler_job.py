@@ -6,7 +6,6 @@ import logging
 def create_cloud_scheduler_job(
     project_id: str,
     region: str,
-    job_name: str,
     job_id: str,
     job_payload: Dict
 ):
@@ -14,7 +13,6 @@ def create_cloud_scheduler_job(
     Arguments:
     - project_id: Google Cloud project ID
     - region: Google Cloud region
-    - job_name: Full Cloud Scheduler job name (e.g., projects/{project_id}/locations/{region}/jobs/{job_id})
     - job_id: Cloud Scheduler job id
     - job_payload: Cloud Scheduler job configuration as a dictionary
 
@@ -26,7 +24,6 @@ def create_cloud_scheduler_job(
 
         # Build the Job object from the job_payload
         job = scheduler_v1.Job(
-            name=job_name,
             schedule=job_payload["schedule"],
             time_zone=job_payload["time_zone"],
             http_target=scheduler_v1.HttpTarget(
@@ -54,7 +51,7 @@ def create_cloud_scheduler_job(
                 "job_id": job_id
             }
         )
-        logging.info(f"Cloud Scheduler job {job_name} created successfully in {project_id}/{region}.")
+        logging.info(f"Cloud Scheduler job {job_id} created successfully in {project_id}/{region}.")
 
     except Exception as e:
-        logging.error(f"Error when creating Cloud Scheduler job {job_name}: {e}")
+        logging.error(f"Error when creating Cloud Scheduler job {job_id}: {e}")
