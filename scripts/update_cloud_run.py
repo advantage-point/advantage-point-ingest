@@ -182,6 +182,9 @@ def main():
                         job_payload=job_payload
                     )
 
+                else:
+                    logging.info(f"No update needed for {job_name}.")
+
 
 if __name__ == '__main__':
     main()
