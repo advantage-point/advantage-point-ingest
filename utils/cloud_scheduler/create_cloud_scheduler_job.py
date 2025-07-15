@@ -27,13 +27,15 @@ def create_cloud_scheduler_job(
         parent = f"projects/{project_id}/locations/{region}"
 
         # Build the Job object from the job_payload
+        headers = {str(k): str(v) for k, v in job_payload["http_target"].get("headers", {}).items()}
+
         job = scheduler_v1.Job(
             schedule=job_payload["schedule"],
             time_zone=job_payload["time_zone"],
             http_target=scheduler_v1.HttpTarget(
                 uri=job_payload["http_target"]["uri"],
                 http_method=scheduler_v1.HttpMethod[job_payload["http_target"]["http_method"]],
-                headers={str(k): str(v) for k, v in job_payload["http_target"]["headers"].items()},
+                headers=headers,
                 oauth_token=scheduler_v1.OAuthToken(
                     service_account_email=job_payload["http_target"]["oauth_token"]["service_account_email"]
                 )
