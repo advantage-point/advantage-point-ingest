@@ -17,7 +17,8 @@ def main():
         format="%(asctime)s - %(levelname)s - %(filename)s:%(lineno)d - %(message)s"
     )
 
-    project_id = get_current_project_id()
+    # project_id = get_current_project_id()
+    project_id = 'advantage-point-465313'
 
     control_object_record_list = get_control_object_records(
         project_id=project_id
@@ -59,173 +60,227 @@ def main():
     cloud_scheduler_job_list = [
         job for job in cloud_scheduler_job_list
         if any(prefix in job['name'] for prefix in cloud_scheduler_prefix_list)
-        and 'update-google-cloud' not in job['name'] # exclude the 'update-google-cloud' job
+        # and 'update-google-cloud' not in job['name'] # exclude the 'update-google-cloud' job
     ]
 
     # build lookup dictionaries
     control_lookup = {record['cloudscheduler_job_name']: record for record in control_object_record_list}
     cloud_scheduler_lookup = {job['name']: job for job in cloud_scheduler_job_list}
-    all_job_names = set(control_lookup.keys()) | set(cloud_scheduler_lookup.keys())  # UNION of keys
+    all_job_names = list(
+        set(
+            list(
+                set(control_lookup.keys()) | set(cloud_scheduler_lookup.keys())
+            )
+        )
+    )  # UNION of keys
+    print(all_job_names)
 
     # loop through job names
     for job_name in all_job_names:
+
+        # print('job_name')
+        # print(job_name)
+        # print('')
 
         # get job name/properties from lists
         control_record_dict = control_lookup.get(job_name)
         cloud_scheduler_job_dict = cloud_scheduler_lookup.get(job_name)
 
-        # if no control record dict
-        if not control_record_dict:
-            logging.info(f"No control table record for {job_name}.")
+        # print('control_record_dict')
+        # print(control_record_dict)
+        # print('')
 
-            # pause any active jobs
-            cloud_scheduler_job_state = cloud_scheduler_job_dict['state']
-            if cloud_scheduler_job_state == 'ENABLED':
-                logging.info(f"Pausing Cloud Scheduler job: {job_name}.")
-                pause_cloud_scheduler_job(
-                    job_name=job_name
-                )
+        # print('cloud_scheduler_job_dict')
+        # print(cloud_scheduler_job_dict)
         
-        # otherwise (implying that both records exist)
-        else:
 
-            # construct job from control record
+        # # if no control record dict
+        # if not control_record_dict:
+        #     logging.info(f"No control table record for {job_name}.")
 
-            # job from create_job:
-                # name
-                # http_target
-                    # uri
-                    # http_method (POST)
-                    # headers (can be null?)
-                # schedule
-                # time_zone
+        #     # pause any active jobs
+        #     cloud_scheduler_job_state = cloud_scheduler_job_dict['state']
+        #     if cloud_scheduler_job_state == 'ENABLED':
+        #         logging.info(f"Pausing Cloud Scheduler job: {job_name}.")
+        #         pause_cloud_scheduler_job(
+        #             job_name=job_name
+        #         )
+        
+        # # otherwise (implying that both records exist)
+        # else:
+        #     # ctrl YES, cs YES -> check for update
+        #     # ctrl YES, cs NO -> create
+        #     pass
+
+        #     # construct job from control record
+        #     job_dict = {
+
+        #     }
+
+        #     # {
+        #     #     'name': 'projects/advantage-point-465313/locations/us-central1/jobs/cr-advpoint-prod-update-google-cloud-scheduler-trigger',
+        #     #     'http_target': {
+        #     #         'uri': 'https://us-central1-run.googleapis.com/apis/run.googleapis.com/v1/namespaces/advantage-point-465313/jobs/cr-advpoint-prod-update-google-cloud:run',
+        #     #         'http_method': 'POST',
+        #     #         'headers': {
+        #     #             'User-Agent': 'Google-Cloud-Scheduler'
+        #     #         },
+        #     #         'oauth_token': {
+        #     #             'service_account_email': 'sa-advpoint-prod-ingest@advantage-point-465313.iam.gserviceaccount.com', 
+        #     #             'scope': 'https://www.googleapis.com/auth/cloud-platform'
+        #     #         }
+        #     #     },
+        #     #     'user_update_time': '2025-07-14T05:26:35Z',
+        #     #     'state': 'ENABLED',
+        #     #     'status': {},
+        #     #     'schedule_time':'2025-07-16T04:00:00.404651Z',
+        #     #     'last_attempt_time': '2025-07-15T04:00:00.165404Z', 
+        #     #     'retry_config': {
+        #     #         'max_retry_duration': '0s',
+        #     #         'min_backoff_duration': '5s',
+        #     #         'max_backoff_duration': '3600s',
+        #     #         'max_doublings': 5
+        #     #     },
+        #     #     'schedule': '0 4 * * *',
+        #     #     'time_zone': 'Etc/UTC',
+        #     #     'attempt_deadline': '180s'
+        #     # }
+
+        #     # job from create_job:
+        #         # name
+        #         # http_target
+        #             # uri
+        #             # http_method (POST)
+        #             # headers (can be null?)
+        #         # schedule
+        #         # time_zone
             
         
-        # create if no existing cloud scheduler job
-        elif control_record_dict and not cloud_scheduler_job_dict:
-            pass
+        # # create if no existing cloud scheduler job
+        # elif control_record_dict and not cloud_scheduler_job_dict:
+        #     pass
 
 
-        else:
+        # else:
 
-            project_id = control_record_dict['cloudscheduler_project_id']
-            region = control_record_dict['cloudscheduler_region']
-            # job_id = control_record_dict['cloudscheduler_job_id']
-            # is_active = control_record_dict['is_active']
-            # job_state = 'ENABLED' if is_active == True else 'PAUSED'
+        #     project_id = control_record_dict['cloudscheduler_project_id']
+        #     region = control_record_dict['cloudscheduler_region']
+        #     # job_id = control_record_dict['cloudscheduler_job_id']
+        #     # is_active = control_record_dict['is_active']
+        #     # job_state = 'ENABLED' if is_active == True else 'PAUSED'
 
             
                 
             
-            config = cloud_scheduler_job_default_config.copy()
-            config.update({
-                "schedule": control_record_dict['cloudscheduler_frequency'],
-                "time_zone": control_record_dict['cloudscheduler_timezone'],
-                "uri": control_record_dict['cloudscheduler_http_target_uri'],
-                "service_account_email": control_record_dict['cloudscheduler_service_account'],
-            })
+        #     config = cloud_scheduler_job_default_config.copy()
+        #     config.update({
+        #         "schedule": control_record_dict['cloudscheduler_frequency'],
+        #         "time_zone": control_record_dict['cloudscheduler_timezone'],
+        #         "uri": control_record_dict['cloudscheduler_http_target_uri'],
+        #         "service_account_email": control_record_dict['cloudscheduler_service_account'],
+        #     })
 
-            job_payload = {
-                "schedule": config["schedule"],
-                "time_zone": config["time_zone"],
-                "http_target": {
-                    "uri": config["uri"],
-                    "http_method": config["http_method"],
-                    "headers": config["headers"],
-                    "oauth_token": {
-                        "service_account_email": config["service_account_email"]
-                    }
-                },
-                "retry_config": {
-                    "max_retry_duration": convert_seconds_to_duration(duration_seconds=config["retry_config"]["max_retry_duration_seconds"]),
-                    "min_backoff_duration": convert_seconds_to_duration(duration_seconds=config["retry_config"]["min_backoff_duration_seconds"]),
-                    "max_backoff_duration": convert_seconds_to_duration(duration_seconds=config["retry_config"]["max_backoff_duration_seconds"]),
-                    "max_doublings": config["retry_config"]["max_doublings"]
-                },
-                "attempt_deadline": convert_seconds_to_duration(duration_seconds=config["attempt_deadline_seconds"]),
-            }
+        #     job_payload = {
+        #         "schedule": config["schedule"],
+        #         "time_zone": config["time_zone"],
+        #         "http_target": {
+        #             "uri": config["uri"],
+        #             "http_method": config["http_method"],
+        #             "headers": config["headers"],
+        #             "oauth_token": {
+        #                 "service_account_email": config["service_account_email"]
+        #             }
+        #         },
+        #         "retry_config": {
+        #             "max_retry_duration": convert_seconds_to_duration(duration_seconds=config["retry_config"]["max_retry_duration_seconds"]),
+        #             "min_backoff_duration": convert_seconds_to_duration(duration_seconds=config["retry_config"]["min_backoff_duration_seconds"]),
+        #             "max_backoff_duration": convert_seconds_to_duration(duration_seconds=config["retry_config"]["max_backoff_duration_seconds"]),
+        #             "max_doublings": config["retry_config"]["max_doublings"]
+        #         },
+        #         "attempt_deadline": convert_seconds_to_duration(duration_seconds=config["attempt_deadline_seconds"]),
+        #     }
 
-            # if job name exists in control table but NOT cloud scheduler --> create it
-            if control_record_dict and not cloud_scheduler_job_dict:
+        #     # if job name exists in control table but NOT cloud scheduler --> create it
+        #     if control_record_dict and not cloud_scheduler_job_dict:
 
-                job_created = False
-                try:
-                    create_cloud_scheduler_job(
-                        project_id=project_id,
-                        region=region,
-                        job_id=job_id,
-                        job_payload=job_payload
-                    )
-                    job_created = True
-                except Exception as e:
-                    logging.error(f"Create failed for {job_name}: {e}")
+        #         job_created = False
+        #         try:
+        #             create_cloud_scheduler_job(
+        #                 project_id=project_id,
+        #                 region=region,
+        #                 job_id=job_id,
+        #                 job_payload=job_payload
+        #             )
+        #             job_created = True
+        #         except Exception as e:
+        #             logging.error(f"Create failed for {job_name}: {e}")
 
-                # Only run state update if job exists or was just created
-                if job_created:
-                    try:
-                        set_cloud_scheduler_job_state(
-                            job_name=job_name,
-                            state=job_state
-                        )
-                    except Exception as e:
-                        logging.error(f"Set state failed for {job_name}: {e}")
-                else:
-                    logging.warning(f"Skipping state update — job not found or create failed for {job_name}.")
+        #         # Only run state update if job exists or was just created
+        #         if job_created:
+        #             try:
+        #                 set_cloud_scheduler_job_state(
+        #                     job_name=job_name,
+        #                     state=job_state
+        #                 )
+        #             except Exception as e:
+        #                 logging.error(f"Set state failed for {job_name}: {e}")
+        #         else:
+        #             logging.warning(f"Skipping state update — job not found or create failed for {job_name}.")
 
 
-                # create cloud scheduler job
-                logging.info(f"Creating Cloud Scheduler job {job_name} in {project_id}/{region}.")
-                create_cloud_scheduler_job(
-                    project_id=project_id,
-                    region=region,
-                    job_id=job_id,
-                    job_payload=job_payload
-                )
+        #         # create cloud scheduler job
+        #         logging.info(f"Creating Cloud Scheduler job {job_name} in {project_id}/{region}.")
+        #         create_cloud_scheduler_job(
+        #             project_id=project_id,
+        #             region=region,
+        #             job_id=job_id,
+        #             job_payload=job_payload
+        #         )
 
         
-            # Check if properties are different
-            elif control_record_dict and cloud_scheduler_job_dict:
+        #     # Check if properties are different
+        #     elif control_record_dict and cloud_scheduler_job_dict:
 
-                # Flatten nested Cloud Scheduler job fields for easier comparison
-                deployed_config = {
-                    "uri": cloud_scheduler_job_dict["http_target"]["uri"],
-                    "http_method": cloud_scheduler_job_dict["http_target"].get("http_method", "POST"),
-                    "headers": cloud_scheduler_job_dict["http_target"].get("headers", {}),
-                    "service_account_email": cloud_scheduler_job_dict["http_target"]
-                        .get("oauth_token", {})
-                        .get("service_account_email", ""),
-                    "schedule": cloud_scheduler_job_dict["schedule"],
-                    "time_zone": cloud_scheduler_job_dict["time_zone"],
-                    "retry_config": cloud_scheduler_job_dict.get("retry_config", {}),
-                    "attempt_deadline": cloud_scheduler_job_dict.get("attempt_deadline", ""),
-                }
+        #         # Flatten nested Cloud Scheduler job fields for easier comparison
+        #         deployed_config = {
+        #             "uri": cloud_scheduler_job_dict["http_target"]["uri"],
+        #             "http_method": cloud_scheduler_job_dict["http_target"].get("http_method", "POST"),
+        #             "headers": cloud_scheduler_job_dict["http_target"].get("headers", {}),
+        #             "service_account_email": cloud_scheduler_job_dict["http_target"]
+        #                 .get("oauth_token", {})
+        #                 .get("service_account_email", ""),
+        #             "schedule": cloud_scheduler_job_dict["schedule"],
+        #             "time_zone": cloud_scheduler_job_dict["time_zone"],
+        #             "retry_config": cloud_scheduler_job_dict.get("retry_config", {}),
+        #             "attempt_deadline": cloud_scheduler_job_dict.get("attempt_deadline", ""),
+        #         }
 
-                desired_config = {
-                    "uri": job_payload["http_target"]["uri"],
-                    "http_method": job_payload["http_target"]["http_method"],
-                    "headers": job_payload["http_target"]["headers"],
-                    "service_account_email": job_payload["http_target"]["oauth_token"]["service_account_email"],
-                    "schedule": job_payload["schedule"],
-                    "time_zone": job_payload["time_zone"],
-                    "retry_config": job_payload["retry_config"],
-                    "attempt_deadline": job_payload["attempt_deadline"],
-                }
+        #         desired_config = {
+        #             "uri": job_payload["http_target"]["uri"],
+        #             "http_method": job_payload["http_target"]["http_method"],
+        #             "headers": job_payload["http_target"]["headers"],
+        #             "service_account_email": job_payload["http_target"]["oauth_token"]["service_account_email"],
+        #             "schedule": job_payload["schedule"],
+        #             "time_zone": job_payload["time_zone"],
+        #             "retry_config": job_payload["retry_config"],
+        #             "attempt_deadline": job_payload["attempt_deadline"],
+        #         }
 
-                if deployed_config != desired_config:
+        #         if deployed_config != desired_config:
 
-                    logging.info(f"Updating Cloud Scheduler job: {job_name}.")
-                    update_cloud_scheduler_job(
-                        project_id=project_id,
-                        region=region,
-                        job_name=job_name,
-                        job_payload=job_payload
-                    )
+        #             logging.info(f"Updating Cloud Scheduler job: {job_name}.")
+        #             update_cloud_scheduler_job(
+        #                 project_id=project_id,
+        #                 region=region,
+        #                 job_name=job_name,
+        #                 job_payload=job_payload
+        #             )
 
-            # set cloud scheduler job state
-            set_cloud_scheduler_job_state(
-                job_name=job_name,
-                state=job_state
-            )
+        #     # set cloud scheduler job state
+        #     set_cloud_scheduler_job_state(
+        #         job_name=job_name,
+        #         state=job_state
+        #     )
 
 if __name__ == '__main__':
     main()
