@@ -128,7 +128,6 @@ def main():
             })
 
             job_payload = {
-                "name": control_record_dict["cloudscheduler_job_name"],  # full path is required
                 "schedule": config["schedule"],
                 "time_zone": config["time_zone"],
                 "http_target": {
