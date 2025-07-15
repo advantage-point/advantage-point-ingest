@@ -140,12 +140,12 @@ def main():
                     }
                 },
                 "retry_config": {
-                    "max_retry_duration": convert_seconds_to_duration(seconds=config["retry_config"]["max_retry_duration_seconds"]),
-                    "min_backoff_duration": convert_seconds_to_duration(seconds=config["retry_config"]["min_backoff_duration_seconds"]),
-                    "max_backoff_duration": convert_seconds_to_duration(seconds=config["retry_config"]["max_backoff_duration_seconds"]),
+                    "max_retry_duration": convert_seconds_to_duration(duration_seconds=config["retry_config"]["max_retry_duration_seconds"]),
+                    "min_backoff_duration": convert_seconds_to_duration(duration_seconds=config["retry_config"]["min_backoff_duration_seconds"]),
+                    "max_backoff_duration": convert_seconds_to_duration(duration_seconds=config["retry_config"]["max_backoff_duration_seconds"]),
                     "max_doublings": config["retry_config"]["max_doublings"]
                 },
-                "attempt_deadline": convert_seconds_to_duration(seconds=config["attempt_deadline_seconds"]),
+                "attempt_deadline": convert_seconds_to_duration(duration_seconds=config["attempt_deadline_seconds"]),
             }
 
             # if job name exists in control table but NOT cloud scheduler --> create it
