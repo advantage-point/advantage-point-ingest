@@ -180,14 +180,14 @@ def main():
                 }
 
                 desired_config = {
-                    "uri": config["http_target"]["uri"],
-                    "http_method": config["http_target"]["http_method"],
-                    "headers": config["http_target"]["headers"],
-                    "service_account_email": config["http_target"]["oauth_token"]["service_account_email"],
-                    "schedule": config["schedule"],
-                    "time_zone": config["time_zone"],
-                    "retry_config": config["retry_config"],
-                    "attempt_deadline": config["attempt_deadline"],
+                    "uri": job_payload["http_target"]["uri"],
+                    "http_method": job_payload["http_target"]["http_method"],
+                    "headers": job_payload["http_target"]["headers"],
+                    "service_account_email": job_payload["http_target"]["oauth_token"]["service_account_email"],
+                    "schedule": job_payload["schedule"],
+                    "time_zone": job_payload["time_zone"],
+                    "retry_config": job_payload["retry_config"],
+                    "attempt_deadline": job_payload["attempt_deadline"],
                 }
 
                 if deployed_config != desired_config:
