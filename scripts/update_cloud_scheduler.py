@@ -8,7 +8,7 @@ from utils.cloud_scheduler.cloud_scheduler_job_default_config import cloud_sched
 from utils.google_cloud.convert_seconds_to_duration import convert_seconds_to_duration
 from utils.cloud_scheduler.create_cloud_scheduler_job import create_cloud_scheduler_job
 from utils.cloud_scheduler.get_cloud_scheduler_jobs import get_cloud_scheduler_jobs
-from utils.cloud_scheduler.set_cloud_scheduler_job_state import set_cloud_scheduler_job_state
+from utils.cloud_scheduler.pause_cloud_scheduler_job import pause_cloud_scheduler_job
 from utils.cloud_scheduler.update_cloud_scheduler_job import update_cloud_scheduler_job
 from utils.google_cloud.get_current_project_id import get_current_project_id
 import logging
@@ -99,24 +99,47 @@ def main():
         control_record_dict = control_lookup.get(job_name)
         cloud_scheduler_job_dict = cloud_scheduler_lookup.get(job_name)
 
-        # skip if no control record dict
+        # if no control record dict
         if not control_record_dict:
             logging.info(f"No control table record for {job_name}.")
 
-            logging.info(f"Deactivating Cloud Scheduler job: {job_name}.")
-            set_cloud_scheduler_job_state(
-                    job_name=job_name,
-                    state='DISABLED'
+            # pause any active jobs
+            cloud_scheduler_job_state = cloud_scheduler_job_dict['state']
+            if cloud_scheduler_job_state == 'ENABLED':
+                logging.info(f"Pausing Cloud Scheduler job: {job_name}.")
+                pause_cloud_scheduler_job(
+                    job_name=job_name
                 )
+        
+        # otherwise (implying that both records exist)
+        else:
+
+            # construct job from control record
+
+            # job from create_job:
+                # name
+                # http_target
+                    # uri
+                    # http_method (POST)
+                    # headers (can be null?)
+                # schedule
+                # time_zone
             
+        
+        # create if no existing cloud scheduler job
+        elif control_record_dict and not cloud_scheduler_job_dict:
+            pass
+
 
         else:
 
             project_id = control_record_dict['cloudscheduler_project_id']
             region = control_record_dict['cloudscheduler_region']
-            job_id = control_record_dict['cloudscheduler_job_id']
-            is_active = control_record_dict['is_active']
-            job_state = 'ENABLED' if is_active == True else 'DISABLED'
+            # job_id = control_record_dict['cloudscheduler_job_id']
+            # is_active = control_record_dict['is_active']
+            # job_state = 'ENABLED' if is_active == True else 'PAUSED'
+
+            
                 
             
             config = cloud_scheduler_job_default_config.copy()
