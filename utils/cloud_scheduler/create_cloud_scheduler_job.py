@@ -1,6 +1,8 @@
 from google.cloud import scheduler_v1
 from typing import Dict
 import logging
+from google.protobuf import duration_pb2
+
 
 
 def create_cloud_scheduler_job(
@@ -19,6 +21,9 @@ def create_cloud_scheduler_job(
     Creates a new Cloud Scheduler job using the given config.
     """
     try:
+        logging.info("Max retry duration:", job_payload["retry_config"]["max_retry_duration"], type(job_payload["retry_config"]["max_retry_duration"]))
+        logging.info("Attempt deadline:", job_payload["attempt_deadline"], type(job_payload["attempt_deadline"]))
+
         client = scheduler_v1.CloudSchedulerClient()
         parent = f"projects/{project_id}/locations/{region}"
 
