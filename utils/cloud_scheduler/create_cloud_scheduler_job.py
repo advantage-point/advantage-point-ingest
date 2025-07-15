@@ -1,8 +1,6 @@
 from google.cloud import scheduler_v1
 from typing import Dict
 import logging
-from google.protobuf import duration_pb2
-
 
 
 def create_cloud_scheduler_job(
@@ -21,9 +19,6 @@ def create_cloud_scheduler_job(
     Creates a new Cloud Scheduler job using the given config.
     """
     try:
-        logging.info("Max retry duration:", job_payload["retry_config"]["max_retry_duration"], type(job_payload["retry_config"]["max_retry_duration"]))
-        logging.info("Attempt deadline:", job_payload["attempt_deadline"], type(job_payload["attempt_deadline"]))
-
         client = scheduler_v1.CloudSchedulerClient()
         parent = f"projects/{project_id}/locations/{region}"
 
@@ -40,12 +35,12 @@ def create_cloud_scheduler_job(
                 )
             ),
             retry_config=scheduler_v1.RetryConfig(
-                max_retry_duration=job_payload["retry_config"]["max_retry_duration"],
-                min_backoff_duration=job_payload["retry_config"]["min_backoff_duration"],
-                max_backoff_duration=job_payload["retry_config"]["max_backoff_duration"],
+                max_retry_duration={"seconds": job_payload["retry_config"]["max_retry_duration"].seconds},
+                min_backoff_duration={"seconds": job_payload["retry_config"]["min_backoff_duration"].seconds},
+                max_backoff_duration={"seconds": job_payload["retry_config"]["max_backoff_duration"].seconds},
                 max_doublings=job_payload["retry_config"]["max_doublings"],
             ),
-            attempt_deadline=job_payload["attempt_deadline"]
+            attempt_deadline={"seconds": job_payload["attempt_deadline"].seconds}
         )
 
         # Create the job
