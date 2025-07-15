@@ -150,6 +150,32 @@ def main():
             # if job name exists in control table but NOT cloud scheduler --> create it
             if control_record_dict and not cloud_scheduler_job_dict:
 
+                job_created = False
+                try:
+                    create_cloud_scheduler_job(
+                        project_id=project_id,
+                        region=region,
+                        job_name=job_name,
+                        job_id=job_id,
+                        job_payload=job_payload
+                    )
+                    job_created = True
+                except Exception as e:
+                    logging.error(f"Create failed for {job_name}: {e}")
+
+                # Only run state update if job exists or was just created
+                if job_created:
+                    try:
+                        set_cloud_scheduler_job_state(
+                            job_name=job_name,
+                            state=job_state
+                        )
+                    except Exception as e:
+                        logging.error(f"Set state failed for {job_name}: {e}")
+                else:
+                    logging.warning(f"Skipping state update — job not found or create failed for {job_name}.")
+
+
                 # create cloud scheduler job
                 logging.info(f"Creating Cloud Scheduler job {job_name} in {project_id}/{region}.")
                 create_cloud_scheduler_job(
