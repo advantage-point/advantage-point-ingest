@@ -5,6 +5,7 @@ from typing import (
 )
 from utils.bigquery.format_query_results import format_query_results
 from utils.cloud_scheduler.cloud_scheduler_job_default_config import cloud_scheduler_job_default_config
+from utils.cloud_scheduler.convert_seconds_to_duration import convert_seconds_to_duration
 from utils.cloud_scheduler.create_cloud_scheduler_job import create_cloud_scheduler_job
 from utils.cloud_scheduler.get_cloud_scheduler_jobs import get_cloud_scheduler_jobs
 from utils.cloud_scheduler.set_cloud_scheduler_job_state import set_cloud_scheduler_job_state
@@ -138,8 +139,13 @@ def main():
                         "service_account_email": config["service_account_email"]
                     }
                 },
-                "retry_config": config["retry_config"],
-                "attempt_deadline": config["attempt_deadline"]
+                "retry_config": {
+                    "max_retry_duration": convert_seconds_to_duration(seconds=config["retry_config"]["max_retry_duration_seconds"]),
+                    "min_backoff_duration": convert_seconds_to_duration(seconds=config["retry_config"]["min_backoff_duration_seconds"]),
+                    "max_backoff_duration": convert_seconds_to_duration(seconds=config["retry_config"]["max_backoff_duration_seconds"]),
+                    "max_doublings": config["retry_config"]["max_doublings"]
+                },
+                "attempt_deadline": convert_seconds_to_duration(seconds=config["attempt_deadline_seconds"]),
             }
 
             # if job name exists in control table but NOT cloud scheduler --> create it

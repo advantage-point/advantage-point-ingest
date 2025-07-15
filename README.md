@@ -26,6 +26,12 @@ The system ingests data from external sources (e.g., Web, APIs or Excel files) o
 - `Logs Writer`: write logs to Cloud Logging
 - `Logs Viewer`: read logs
 - `Artifact Registry Writer`: upload artifacts to Artifact Registry
+- `Cloud Run Invoker`: invoke Cloud Run services and execute Cloud Run jobs
+- `BigQuery User`: access to run queries, create datasets, read dataset metadata, and list tables, models, and property graphs
+- `BigQuery Data Viewer`: view datasets and all of their contents
+- `BigQuery Data Editor`: edit contents of datasets
+- `Cloud Run Viewer`: view state of all Cloud Run resources
+- `Cloud Scheduler Admin`: full access to jobs and executions
 
 ```mermaid
 graph LR
