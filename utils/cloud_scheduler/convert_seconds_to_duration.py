@@ -1,7 +1,7 @@
 from google.protobuf import duration_pb2
 
 
-def seconds_to_duration(duration_seconds: int) -> duration_pb2.Duration:
+def convert_seconds_to_duration(duration_seconds: int) -> duration_pb2.Duration:
     """
     Arguments:
     - duration_seconds: Duration in seconds
