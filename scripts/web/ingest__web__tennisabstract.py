@@ -6,7 +6,7 @@ from utils.bigquery.create_table_with_df import create_table_with_df
 from utils.bigquery.create_target_table import create_target_table
 from utils.bigquery.drop_table import drop_table
 from utils.bigquery.insert_target_table import insert_target_table
-from utils.bigquery.query_control_object_record import query_control_object_record
+from utils.bigquery.get_control_object_record_full import get_control_object_record_full
 from utils.bigquery.update_target_table import update_target_table
 import argparse
 import importlib
@@ -25,7 +25,7 @@ def main(
     try:
 
         # query for control table record
-        table_record_dict = query_control_object_record(
+        table_record_dict = get_control_object_record_full(
             target_table_id=target_table_id
         )
 

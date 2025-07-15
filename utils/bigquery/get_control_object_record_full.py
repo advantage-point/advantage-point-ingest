@@ -6,7 +6,7 @@ from utils.bigquery.format_query_results import format_query_results
 from utils.google_cloud.get_current_project_id import get_current_project_id
 import logging
 
-def query_control_object_record(
+def get_control_object_record_full(
     target_table_id: str
 ) -> Dict:
     """
