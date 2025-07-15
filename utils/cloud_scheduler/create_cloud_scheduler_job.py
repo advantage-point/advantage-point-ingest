@@ -19,6 +19,8 @@ def create_cloud_scheduler_job(
     Creates a new Cloud Scheduler job using the given config.
     """
     try:
+        logging.info("Attempt deadline type: %s", type(job_payload["attempt_deadline"]))
+
         client = scheduler_v1.CloudSchedulerClient()
         parent = f"projects/{project_id}/locations/{region}"
 
@@ -35,12 +37,12 @@ def create_cloud_scheduler_job(
                 )
             ),
             retry_config=scheduler_v1.RetryConfig(
-                max_retry_duration={"seconds": job_payload["retry_config"]["max_retry_duration"].seconds},
-                min_backoff_duration={"seconds": job_payload["retry_config"]["min_backoff_duration"].seconds},
-                max_backoff_duration={"seconds": job_payload["retry_config"]["max_backoff_duration"].seconds},
+                max_retry_duration=job_payload["retry_config"]["max_retry_duration"],
+                min_backoff_duration=job_payload["retry_config"]["min_backoff_duration"],
+                max_backoff_duration=job_payload["retry_config"]["max_backoff_duration"],
                 max_doublings=job_payload["retry_config"]["max_doublings"],
             ),
-            attempt_deadline={"seconds": job_payload["attempt_deadline"].seconds}
+            attempt_deadline=job_payload["attempt_deadline"]
         )
 
         # Create the job
@@ -55,3 +57,4 @@ def create_cloud_scheduler_job(
 
     except Exception as e:
         logging.error(f"Error when creating Cloud Scheduler job {job_id}: {e}")
+        raise
