@@ -1,9 +1,5 @@
-from google.cloud import bigquery, scheduler_v1
-from typing import (
-    Dict,
-    List,
-)
-from utils.bigquery.format_query_results import format_query_results
+from google.cloud import scheduler_v1
+from utils.bigquery.get_control_object_records import get_control_object_records
 from utils.cloud_scheduler.cloud_scheduler_job_default_config import cloud_scheduler_job_default_config
 from utils.google_cloud.convert_seconds_to_duration import convert_seconds_to_duration
 from utils.cloud_scheduler.create_cloud_scheduler_job import create_cloud_scheduler_job
@@ -12,27 +8,6 @@ from utils.cloud_scheduler.pause_cloud_scheduler_job import pause_cloud_schedule
 from utils.cloud_scheduler.update_cloud_scheduler_job import update_cloud_scheduler_job
 from utils.google_cloud.get_current_project_id import get_current_project_id
 import logging
-
-def fetch_control_table_records(
-    project_id: str
-) -> List[Dict]:
-    """
-    Arguments:
-    - project_id: Google Cloud project ID
-
-    Queries master control object for records.
-    """
-    client = bigquery.Client()
-    query_sql = f"""
-        SELECT
-            *
-        FROM {project_id}.meta.control_object__ingest__master
-        ;
-    """
-    query_sql_job = client.query(query_sql)
-    return format_query_results(query_job=query_sql_job)
-
-
 
 def main():
 
@@ -44,7 +19,7 @@ def main():
 
     project_id = get_current_project_id()
 
-    control_object_record_list = fetch_control_table_records(
+    control_object_record_list = get_control_object_records(
         project_id=project_id
     )
 
