@@ -19,6 +19,8 @@ def create_cloud_scheduler_job(
     Creates a new Cloud Scheduler job using the given config.
     """
     try:
+        for key, val in job_payload["retry_config"].items():
+            logging.info(f"retry_config[{key}] = {val} ({type(val)})")
         logging.info("Attempt deadline type: %s", type(job_payload["attempt_deadline"]))
 
         client = scheduler_v1.CloudSchedulerClient()
