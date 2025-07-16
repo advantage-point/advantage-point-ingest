@@ -1,5 +1,3 @@
-from google.cloud import bigquery
-# from utils.api__toast.get__orders import get__orders
 from utils.bigquery.alter_target_table import alter_target_table
 from utils.bigquery.check_table_existence import check_table_existence
 from utils.bigquery.create_table_with_df import create_table_with_df
