@@ -30,7 +30,7 @@ def main(
         )
 
         # parse control table record
-        fetch_function_full_path = table_record_dict['fetch_function_full_path']
+        load_data_function_full_path = table_record_dict['load_data_function_full_path']
         target_project_id = table_record_dict['bigquery_target_project_id']
         temp_project_id = table_record_dict['bigquery_temp_project_id']
         target_dataset_id = table_record_dict['bigquery_target_dataset_id']
@@ -40,8 +40,8 @@ def main(
         unique_column_name_list = table_record_dict['unique_column_name_list']
 
         # get data
-        fetch_function = importlib.import_module(fetch_function_full_path)
-        data_df = fetch_function.main()
+        load_data_function = importlib.import_module(load_data_function_full_path)
+        data_df = load_data_function.main()
         if data_df is None or data_df.empty:
             logging.info("No data to process. Exiting.")
             return
