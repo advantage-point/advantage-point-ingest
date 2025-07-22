@@ -32,6 +32,7 @@ The system ingests data from external sources (e.g., Web, APIs or Excel files) o
 - `BigQuery Data Editor`: edit contents of datasets
 - `Cloud Run Viewer`: view state of all Cloud Run resources
 - `Cloud Scheduler Admin`: full access to jobs and executions
+- `Storage Admin`: full control of buckets and objects
 
 ```mermaid
 graph LR

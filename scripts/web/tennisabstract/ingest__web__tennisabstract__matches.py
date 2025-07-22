@@ -3,7 +3,7 @@ from scripts.web.tennisabstract.matches.get_match_data_df import get_match_data_
 from scripts.web.tennisabstract.matches.get_match_url_list import get_match_url_list
 from utils.bigquery.alter_target_table import alter_target_table
 from utils.bigquery.check_table_existence import check_table_existence
-from utils.bigquery.create_table_with_df import create_table_with_df
+from utils.bigquery.create_table_with_cloud_storage import create_table_with_cloud_storage
 from utils.bigquery.create_target_table import create_target_table
 from utils.bigquery.drop_table import drop_table
 from utils.bigquery.insert_target_table import insert_target_table
@@ -37,16 +37,20 @@ def main():
         match_url_list_len = len(match_url_list)
 
         # parse control table record
+        bigquery_target_dataset_id = table_record_dict['bigquery_target_dataset_id']
+        bigquery_target_dataset_location = table_record_dict['bigquery_target_dataset_location']
+        bigquery_target_project_id = table_record_dict['bigquery_target_project_id']
+        bigquery_target_table_id = table_record_dict['bigquery_target_table_id']
+        bigquery_temp_dataset_id = table_record_dict['bigquery_temp_dataset_id']
+        bigquery_temp_dataset_location = table_record_dict['bigquery_temp_dataset_location']
+        bigquery_temp_project_id = table_record_dict['bigquery_temp_project_id']
+        bigquery_temp_table_id = table_record_dict['bigquery_temp_table_id']
+        
         cloudstorage_bucket_name = table_record_dict['cloudstorage_bucket_name']
         cloudstorage_folder_name_prefix = table_record_dict['cloudstorage_folder_name_prefix']
         cloudstorage_object_name_prefix = table_record_dict['cloudstorage_object_name_prefix']
         source_load_record_batch_count = table_record_dict['source_load_record_batch_count'] or match_url_list_len
-        # target_project_id = table_record_dict['bigquery_target_project_id']
-        # temp_project_id = table_record_dict['bigquery_temp_project_id']
-        # target_dataset_id = table_record_dict['bigquery_target_dataset_id']
-        # temp_dataset_id = table_record_dict['bigquery_temp_dataset_id']
-        # temp_table_id = table_record_dict['bigquery_temp_table_id']
-        # unique_column_name_list = table_record_dict['unique_column_name_list']
+        unique_column_name_list = table_record_dict['unique_column_name_list']
 
         # create cloud storage properties
         cloudstorage_folder_name = f"{cloudstorage_folder_name_prefix}/{today_str}"
@@ -83,22 +87,26 @@ def main():
                 object_path=cloudstorage_object_path
             )
 
+            # free up memory
+            del match_data_df
+            gc.collect()
 
+        # drop temp table
+        drop_table(
+            project_id=bigquery_temp_project_id,
+            dataset_id=bigquery_temp_dataset_id,
+            table_id=bigquery_temp_table_id
+        )
 
-        # # drop temp table
-        # drop_table(
-        #     project_id=temp_project_id,
-        #     dataset_id=temp_dataset_id,
-        #     table_id=temp_table_id
-        # )
-
-        # # create temp table
-        # create_table_with_df(
-        #     project_id=temp_project_id,
-        #     dataset_id=temp_dataset_id,
-        #     table_id=temp_table_id,
-        #     dataframe=match_data_df
-        # )
+        # create temp table
+        cloudstorage_to_bigquery_object_pattern = f"{cloudstorage_folder_name}/*.json"
+        create_table_with_cloud_storage(
+            cloudstorage_bucket_name=cloudstorage_bucket_name,
+            cloudstorage_object_pattern=cloudstorage_to_bigquery_object_pattern,
+            bigquery_dataset_id=bigquery_temp_dataset_id,
+            bigquery_dataset_location=bigquery_temp_dataset_location
+            bigquery_table_id=bigquery_temp_table_id
+        )
 
         # # check target table existence
         # target_table_exists_flag = check_table_existence(
@@ -157,10 +165,6 @@ def main():
         #     dataset_id=temp_dataset_id,
         #     table_id=temp_table_id
         # )
-
-        # # free up memory
-        # del match_data_df
-        # gc.collect()
 
     except Exception as e:
         logging.error(f"Error with ingestion process for {bigquery_target_table_id}: {e}")

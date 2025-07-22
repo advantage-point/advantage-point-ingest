@@ -14,7 +14,7 @@ def upload_df_to_cloud_storage(
     - object_path: Full object path (e.g. 'tmp/matches/20250722/matches_batch_000001.json')
     - file_extension
 
-    Uploads datafra
+    Uploads dataframe to Cloud Storage in NDJSON format.
     """
     try:
 
