@@ -8,8 +8,7 @@ from utils.bigquery.drop_table import drop_table
 from utils.bigquery.insert_target_table import insert_target_table
 from utils.bigquery.get_control_object_record_full import get_control_object_record_full
 from utils.bigquery.update_target_table import update_target_table
-import argparse
-import importlib
+import gc
 import logging
 
 def main():
@@ -44,8 +43,11 @@ def main():
         for i in range(0, match_url_list_len, source_load_record_batch_count):
 
             # process the current batch
-            logging.info(f"Processing batch {i // source_load_record_batch_count + 1}: {source_load_record_batch_count} records.")
-            match_url_list_batch = match_url_list[i:i + source_load_record_batch_count]
+            start_idx = i
+            end_idx = min(i + source_load_record_batch_count, match_url_list_len)
+            match_url_list_batch = match_url_list[start_idx:end_idx]
+
+            logging.info(f"Processing records {start_idx} to {end_idx - 1} (batch size: {len(match_url_list_batch)}).")
 
             # create dataframe
             match_data_df = get_match_data_df(
@@ -124,6 +126,10 @@ def main():
                 dataset_id=temp_dataset_id,
                 table_id=temp_table_id
             )
+
+            # free up memory
+            del match_data_df
+            gc.collect()
 
     except Exception as e:
         logging.error(f"Error with ingestion process for {target_table_id}: {e}")
