@@ -44,7 +44,7 @@ def main():
         for i in range(0, match_url_list_len, source_load_record_batch_count):
 
             # process the current batch
-            logging.info(f"Processing batch {i // source_load_record_batch_count + 1}: {source_load_record_batch_count} records.")
+            logging.info(f"Processing batch {i // source_load_record_batch_count + 1}: {match_url_list_len} records.")
             match_url_list_batch = match_url_list[i:i + source_load_record_batch_count]
 
             # create dataframe
