@@ -29,10 +29,10 @@ def main():
 
         # get match url list
         match_url_list = get_match_url_list()
-        match_list_len = len(match_url_list)
+        match_url_list_len = len(match_url_list)
 
         # parse control table record
-        source_load_record_batch_count = table_record_dict['source_load_record_batch_count'] or match_list_len
+        source_load_record_batch_count = table_record_dict['source_load_record_batch_count'] or match_url_list_len
         target_project_id = table_record_dict['bigquery_target_project_id']
         temp_project_id = table_record_dict['bigquery_temp_project_id']
         target_dataset_id = table_record_dict['bigquery_target_dataset_id']
@@ -41,7 +41,7 @@ def main():
         temp_table_id = table_record_dict['bigquery_temp_table_id']
         unique_column_name_list = table_record_dict['unique_column_name_list']
 
-        for i in range(0, match_list_len, source_load_record_batch_count):
+        for i in range(0, match_url_list_len, source_load_record_batch_count):
 
             # process the current batch
             logging.info(f"Processing batch {i // source_load_record_batch_count + 1}: {len(source_load_record_batch_count)} records")
