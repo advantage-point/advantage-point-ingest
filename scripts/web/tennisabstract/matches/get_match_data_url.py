@@ -22,7 +22,7 @@ def get_match_data_url(
     match_data_dict['match_date'] = match_date
     match_gender = match_url_parsed_list[1]
     match_data_dict['match_gender'] = match_gender
-    match_tournament = match_url_parsed_list[2]
+    match_tournament = match_url_parsed_list[2].replace('_', ' ')
     match_data_dict['match_tournament'] = match_tournament
     match_round = match_url_parsed_list[3]
     match_data_dict['match_round'] = match_round
