@@ -104,7 +104,7 @@ def main():
             cloudstorage_bucket_name=cloudstorage_bucket_name,
             cloudstorage_object_pattern=cloudstorage_to_bigquery_object_pattern,
             bigquery_dataset_id=bigquery_temp_dataset_id,
-            bigquery_dataset_location=bigquery_temp_dataset_location
+            bigquery_dataset_location=bigquery_temp_dataset_location,
             bigquery_table_id=bigquery_temp_table_id
         )
 
