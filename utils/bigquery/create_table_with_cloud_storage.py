@@ -48,4 +48,4 @@ def create_table_with_cloud_storage(
         logging.info(f"Loaded data from Cloud Storage URI ({cloudstorage_uri}) to Bigquery table ({table_fq})")
 
     except Exception as e:
-        logging.error(f"Error loading data from Cloud Storage URI ({cloudstorage_uri}) to Bigquery table ({table_fq})")
+        logging.error(f"Error loading data from Cloud Storage URI ({cloudstorage_uri}) to Bigquery table ({table_fq}): {e}.")
