@@ -31,7 +31,8 @@ def create_table_with_cloud_storage(
 
         job_config = bigquery.LoadJobConfig(
             source_format=bigquery.SourceFormat.NEWLINE_DELIMITED_JSON,
-            write_disposition='WRITE_APPEND'
+            write_disposition='WRITE_APPEND',
+            autodetect=True
         )
 
         cloudstorage_uri = f"gs://{cloudstorage_bucket_name}/{cloudstorage_object_pattern}"
