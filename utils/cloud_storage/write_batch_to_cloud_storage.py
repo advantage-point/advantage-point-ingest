@@ -30,6 +30,8 @@ def write_batch_to_cloud_storage(
         lines = [json.dumps(record) for record in record_list]
         blob.upload_from_string('\n'.join(lines), content_type='application/json')
 
+        logging.info(f"Wrote data to bucket {bucket_name} object path {object_path}.")
+
     except Exception as e:
         logging.error(f"Error when writing to bucket {bucket_name} object path {object_path}: {e}.")
         raise
