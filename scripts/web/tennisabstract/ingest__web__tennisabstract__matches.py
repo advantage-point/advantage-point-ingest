@@ -10,6 +10,7 @@ from utils.bigquery.get_control_object_record_full import get_control_object_rec
 from utils.bigquery.update_target_table import update_target_table
 from utils.cloud_storage.delete_cloud_storage_objects import delete_cloud_storage_objects
 from utils.cloud_storage.upload_df_to_cloud_storage import upload_df_to_cloud_storage
+from utils.cloud_storage.write_batch_to_cloud_storage import write_batch_to_cloud_storage
 import gc
 import logging
 
@@ -72,23 +73,29 @@ def main():
 
             logging.info(f"Processing records {start_idx} to {end_idx - 1} (batch size: {len(match_url_list_batch)}).")
 
-            # create dataframe
-            match_data_df = get_match_data_df(
-                match_url_list=match_url_list_batch
-            )
+            # # create dataframe
+            # match_data_df = get_match_data_df(
+            #     match_url_list=match_url_list_batch
+            # )
 
             # upload to cloud storage
             cloudstorage_object_name = f"{cloudstorage_object_name_prefix}__{today_str}__{batch_number_fmt}.json"
             cloudstorage_object_path = f"{cloudstorage_folder_name}/{cloudstorage_object_name}"
-            upload_df_to_cloud_storage(
-                df=match_data_df,
+            write_batch_to_cloud_storage(
+                record_list=match_url_list_batch,
                 bucket_name=cloudstorage_bucket_name,
                 object_path=cloudstorage_object_path
             )
+            
+            # upload_df_to_cloud_storage(
+            #     df=match_data_df,
+            #     bucket_name=cloudstorage_bucket_name,
+            #     object_path=cloudstorage_object_path
+            # )
 
-            # free up memory
-            del match_data_df
-            gc.collect()
+            # # free up memory
+            # del match_data_df
+            # gc.collect()
 
         # check target table existence
         target_table_exists_flag = check_table_existence(
