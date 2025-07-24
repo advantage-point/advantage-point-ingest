@@ -72,7 +72,7 @@ def get_match_data_scraped(
             ]
             for javascript_var in javascript_var_list:
                 # create key name
-                key_name = f"match_{javascript_var.lower()}_raw"
+                key_name = javascript_var
 
                 # get the javascript var value: var <var> = '<val>'
                 try:
