@@ -3,7 +3,7 @@ from typing import (
     List,
 )
 from scripts.web.tennisabstract.matches.get_match_data_scraped import get_match_data_scraped
-from scripts.web.tennisabstract.matches.get_match_data_url import get_match_data_url
+# from scripts.web.tennisabstract.matches.get_match_data_url import get_match_data_url
 import logging
 
 def get_match_data(
@@ -25,9 +25,9 @@ def get_match_data(
             match_url = match_dict['match_url']
             logging.info(f"({i+1}/{len(match_url_list)}) Getting match data for match url: {match_url}")
 
-            # get data from match url
-            match_url_dict = get_match_data_url(match_url=match_url)
-            logging.info(f"Got match url data for match url: {match_url}")
+            # # get data from match url
+            # match_url_dict = get_match_data_url(match_url=match_url)
+            # logging.info(f"Got match url data for match url: {match_url}")
 
             # get data from match scraping
             match_scrape_dict = get_match_data_scraped(
@@ -43,7 +43,7 @@ def get_match_data(
 
                 # combine match data
                 match_data_dict = {
-                    **match_url_dict,
+                    **match_dict,
                     **match_scrape_dict,
                 }
 
