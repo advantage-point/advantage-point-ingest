@@ -1,4 +1,5 @@
 from bs4 import BeautifulSoup
+from scripts.web.tennisabstract.matches.parse_match_pointlog import parse_match_pointlog
 from typing import (
     Dict,
 )
@@ -51,39 +52,17 @@ def get_match_data_scraped(
                 match_result = None
             match_dict["match_result"] = match_result
 
-            # get the javascript variables
-            javascript_var_list = [
-                'serve',
-                'serve1',
-                'serve2',
-                'return1',
-                'return2',
-                'keypoints',
-                'rallyoutcomes',
-                'overview',
-                'shots1',
-                'shots2',
-                'shotdir1',
-                'shotdir2',
-                'netpts1',
-                'netpts2',
-                'serveNeut',
-                'pointlog',
-            ]
-            for javascript_var in javascript_var_list:
-                # create key name
-                key_name = javascript_var
-
-                # get the javascript var value: var <var> = '<val>'
-                try:
-                    val_raw = scrape_javascript_var(
-                        content=response.text,
-                        var=javascript_var
-                    )
-                except Exception as e:
-                    logging.info(f"Error encountered when getting data for variable `{key_name}`: {e}.")
-                    val_raw = None
-                match_dict[key_name] = val_raw                
+            # get pointlog
+            try:
+                match_pointlog_html = scrape_javascript_var(
+                    content=response.text,
+                    var='pointlog'
+                )
+                match_pointlog = parse_match_pointlog(pointlog_html=match_pointlog_html)
+            except Exception as e:
+                logging.info(f"Error encountered when getting data for variable `match_pointlog`: {e}.")
+                match_pointlog = []
+            match_dict['match_pointlog'] = match_pointlog            
 
             # check if all values in dict are None -> return empty dict
             if all(value is None for value in match_dict.values()):
