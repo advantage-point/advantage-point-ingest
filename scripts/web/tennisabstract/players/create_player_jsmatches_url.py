@@ -11,6 +11,6 @@ def create_player_jsmatches_url(
     # format parts of url string
     url_player_name = player_name.replace(' ', '')
 
-    player_url = f"https://www.tennisabstract.com/jsmatches/{url_player_str}.js"
+    player_url = f"https://www.tennisabstract.com/jsmatches/{url_player_name}.js"
 
     return player_url
