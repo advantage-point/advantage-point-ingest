@@ -15,6 +15,7 @@ google-cloud-storage==3.2.0
 google-crc32c==1.7.1
 google-resumable-media==2.7.2
 googleapis-common-protos==1.70.0
+greenlet==3.2.3
 grpc-google-iam-v1==0.14.2
 grpcio==1.73.0
 grpcio-status==1.73.0
@@ -24,12 +25,14 @@ oauthlib==3.3.1
 packaging==25.0
 pandas==2.3.0
 pandas-gbq==0.29.1
+playwright==1.54.0
 proto-plus==1.26.1
 protobuf==6.31.1
 pyarrow==20.0.0
 pyasn1==0.6.1
 pyasn1_modules==0.4.2
 pydata-google-auth==1.9.1
+pyee==13.0.0
 python-dateutil==2.9.0.post0
 pytz==2025.2
 requests==2.32.4

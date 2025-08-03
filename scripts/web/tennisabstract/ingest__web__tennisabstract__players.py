@@ -1,7 +1,6 @@
 from datetime import datetime
-from scripts.web.tennisabstract.matches.get_match_data import get_match_data
-# from scripts.web.tennisabstract.matches.get_match_data_df import get_match_data_df
-from scripts.web.tennisabstract.matches.get_match_url_list import get_match_url_list
+from scripts.web.tennisabstract.players.get_player_data import get_player_data
+from scripts.web.tennisabstract.players.get_player_url_list import get_player_url_list
 from utils.bigquery.alter_target_table import alter_target_table
 from utils.bigquery.check_table_existence import check_table_existence
 from utils.bigquery.create_table_with_cloud_storage import create_table_with_cloud_storage
@@ -10,9 +9,7 @@ from utils.bigquery.insert_target_table import insert_target_table
 from utils.bigquery.get_control_object_record_full import get_control_object_record_full
 from utils.bigquery.update_target_table import update_target_table
 from utils.cloud_storage.delete_cloud_storage_objects import delete_cloud_storage_objects
-# from utils.cloud_storage.upload_df_to_cloud_storage import upload_df_to_cloud_storage
 from utils.cloud_storage.write_batch_to_cloud_storage import write_batch_to_cloud_storage
-import gc
 import logging
 
 def main():
@@ -28,14 +25,14 @@ def main():
         today_str = datetime.now().strftime("%Y%m%d")
 
         # query for control table record
-        bigquery_target_table_id = 'raw__web__tennisabstract__matches'
+        bigquery_target_table_id = 'raw__web__tennisabstract__players'
         table_record_dict = get_control_object_record_full(
             target_table_id=bigquery_target_table_id
         )
 
-        # get match url list
-        match_url_list = get_match_url_list()
-        match_url_list_len = len(match_url_list)
+        # get player url list
+        player_url_list = get_player_url_list()
+        player_url_list_len = len(player_url_list)
 
         # parse control table record
         bigquery_target_dataset_id = table_record_dict['bigquery_target_dataset_id']
@@ -49,7 +46,7 @@ def main():
         cloudstorage_bucket_name = table_record_dict['cloudstorage_bucket_name']
         cloudstorage_folder_name_prefix = table_record_dict['cloudstorage_folder_name_prefix']
         cloudstorage_object_name_prefix = table_record_dict['cloudstorage_object_name_prefix']
-        source_load_record_batch_count = table_record_dict['source_load_record_batch_count'] or match_url_list_len
+        source_load_record_batch_count = table_record_dict['source_load_record_batch_count'] or player_url_list_len
         unique_column_name_list = table_record_dict['unique_column_name_list']
 
         # create cloud storage properties
@@ -63,45 +60,30 @@ def main():
         )
 
         # loop through records
-        for i in range(0, match_url_list_len, source_load_record_batch_count):
+        for i in range(0, player_url_list_len, source_load_record_batch_count):
 
             # process the current batch
             batch_number = i // source_load_record_batch_count + 1
             batch_number_fmt = f"{batch_number:06d}"
             start_idx = i
-            end_idx = min(i + source_load_record_batch_count, match_url_list_len)
-            match_url_list_batch = match_url_list[start_idx:end_idx]
+            end_idx = min(i + source_load_record_batch_count, player_url_list_len)
+            player_url_list_batch = player_url_list[start_idx:end_idx]
 
-            logging.info(f"Processing records {start_idx} to {end_idx - 1} (batch size: {len(match_url_list_batch)}).")
+            logging.info(f"Processing records {start_idx} to {end_idx - 1} (batch size: {len(player_url_list_batch)}).")
 
-            # # create dataframe
-            # match_data_df = get_match_data_df(
-            #     match_url_list=match_url_list_batch
-            # )
-            
-            # get match data
-            match_data_list = get_match_data(
-                match_url_list=match_url_list_batch
+            # get player data
+            player_data_list = get_player_data(
+                player_url_list=player_url_list_batch
             )
 
             # upload to cloud storage
             cloudstorage_object_name = f"{cloudstorage_object_name_prefix}__{today_str}__{batch_number_fmt}.json"
             cloudstorage_object_path = f"{cloudstorage_folder_name}/{cloudstorage_object_name}"
             write_batch_to_cloud_storage(
-                record_list=match_data_list,
+                record_list=player_data_list,
                 bucket_name=cloudstorage_bucket_name,
                 object_path=cloudstorage_object_path
             )
-            
-            # upload_df_to_cloud_storage(
-            #     df=match_data_df,
-            #     bucket_name=cloudstorage_bucket_name,
-            #     object_path=cloudstorage_object_path
-            # )
-
-            # # free up memory
-            # del match_data_df
-            # gc.collect()
 
         # check target table existence
         target_table_exists_flag = check_table_existence(
