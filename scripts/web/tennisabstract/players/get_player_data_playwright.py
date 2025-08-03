@@ -49,7 +49,7 @@ def get_player_data_playwright(
                 wait_until='networkidle'
             )
             page_timeout = 5000 + (2500*attempt)
-            page.wait_for_function("typeof nameparam !== 'undefined'", timeout=page_timeout)
+            page.wait_for_function(f"typeof {response_var_list[0]} !== 'undefined'", timeout=page_timeout)
             response_text = page.content()
             response_status_code = response.status if response else None
                 
@@ -68,13 +68,9 @@ def get_player_data_playwright(
                 
                 logging.info(f"All values None for {player_url}")
                 
-                # Log possible causes
-                logging.debug(f"Page Content Length: {len(response_text)}")
-                logging.debug(f"Response Status Code: {response_status_code}")
-                
                 # Log which variables were not found
                 missing_vars = [var for var, val in player_dict.items() if val is None]
-                logging.debug(f"Missing variables: {missing_vars}")
+                logging.info(f"Missing variables: {missing_vars}")
 
                 attempt += 1
                 

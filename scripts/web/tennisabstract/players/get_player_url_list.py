@@ -4,6 +4,7 @@ from typing import (
 )
 from scripts.web.tennisabstract.players.create_player_url import create_player_url
 from scripts.web.tennisabstract.players.create_player_classic_url import create_player_classic_url
+from scripts.web.tennisabstract.players.create_player_jsmatches_url import create_player_jsmatches_url
 from utils.web.scrape_javascript_var import scrape_javascript_var
 from utils.web.make_request import make_request
 import ast
@@ -54,6 +55,12 @@ def get_player_url_list() -> List[Dict]:
             player_gender=gender
         )
         player_url_dict['player_classic_url'] = player_classic_url
+
+        # create player jsmatches url
+        player_jsmatches_url = create_player_jsmatches_url(
+            player_name=name
+        )
+        player_url_dict['player_jsmatches_url'] = player_jsmatches_url
 
         player_url_list.append(player_url_dict)
 

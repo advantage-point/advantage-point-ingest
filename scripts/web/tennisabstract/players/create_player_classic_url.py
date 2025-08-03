@@ -1,7 +1,3 @@
-from typing import (
-    Dict,
-)
-
 def create_player_classic_url(
     player_name: str,
     player_gender: str
