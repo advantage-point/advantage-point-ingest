@@ -1,10 +1,10 @@
-from typing import (
-    Dict
-)
 from playwright.sync_api import (
     Page,
-)from utils.functions.web.scrape.scrape_javascript_var import scrape_javascript_var
-
+)
+from typing import (
+    Dict,
+)
+from utils.web.scrape_javascript_var import scrape_javascript_var
 import logging
 import time
 
