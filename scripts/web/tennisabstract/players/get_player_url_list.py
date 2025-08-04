@@ -2,10 +2,13 @@ from typing import (
     Dict,
     List,
 )
-# from scripts.web.tennisabstract.players.create_player_url import create_player_url
-# from scripts.web.tennisabstract.players.create_player_classic_url import create_player_classic_url
-from scripts.web.tennisabstract.players.create_player_jsmatches_career_url import create_player_jsmatches_career_url
-from scripts.web.tennisabstract.players.create_player_jsmatches_url import create_player_jsmatches_url
+
+from scripts.web.tennisabstract.players.create_player_url import (
+    # create_player_url,
+    # create_player_classic_url,
+    create_player_jsmatches_url,
+    create_player_jsmatches_career_url,
+)
 from utils.web.scrape_javascript_var import scrape_javascript_var
 from utils.web.make_request import make_request
 import ast

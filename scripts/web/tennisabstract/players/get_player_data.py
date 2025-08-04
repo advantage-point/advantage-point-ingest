@@ -1,9 +1,12 @@
-from scripts.web.tennisabstract.players.get_player_data_playwright import get_player_data_playwright
+from scripts.web.tennisabstract.players.get_player_data_scraped import (
+    get_player_jsmatches_data_scraped,
+    get_player_jsmatches_career_data_scraped,
+)
 from typing import (
     Dict,
     List,
 )
-from utils.web.create_playwright_page import create_playwright_page
+from utils.python.combine_list_of_dicts import combine_list_of_dicts
 import logging
 
 def get_player_data(
@@ -13,53 +16,63 @@ def get_player_data(
     Arguments:
     - player_url_list: List of player urls
 
-    Create pandas dataframe from list.
+    Create list of player data from list of player urls.
     """
 
     try:
 
-        # create playwright page
-        playwright, browser, page = create_playwright_page()
-
-        # loop through player url list
+        # loop through player urls
         player_data_list = []
-        for i, player_url_dict in enumerate(player_url_list):
+        for i, player_dict in enumerate(player_url_list):
 
-            logging.info(f"({i+1}/{len(player_url_list)}) Getting player data")
+            player_name = player_dict['player_name']
+            logging.info(f"({i+1}/{len(player_url_list)}) Getting player data for player: {player_name}.")
 
-            player_url = player_url_dict['player_url']
-            logging.info(f"Getting player data for player url: {player_url}")
-
-            # get data from player scraping
-            player_scrape_dict = get_player_data_playwright(
-                player_url=player_url,
-                page=page,
+            
+            # get data from player jsmatches scraping
+            player_jsmatches_url = player_dict['player_jsmatches_url']
+            player_jsmatches_scrape_dict = get_player_jsmatches_data_scraped(
+                player_jsmatches_url=player_jsmatches_url,
                 retries=3,
-                delay=3,
+                delay=3
             )
+
+            # get data frm player jsmatches career scraping
+            player_jsmatches_career_url = player_dict['player_jsmatches_career_url']
+            player_jsmatches_career_scrape_dict = get_player_jsmatches_career_data_scraped(
+                player_jsmatches_career_url=player_jsmatches_career_url,
+                retries=3,
+                delay=3
+            )
+
+            # combine the 'matchmx' arrays if overlap
+            if player_jsmatches_scrape_dict['matchmx'] and player_jsmatches_career_scrape_dict['morematchmx']:
+                player_jsmatches_scrape_dict['matchmx'] = combine_list_of_dicts(
+                    player_jsmatches_scrape_dict['matchmx'],
+                    player_jsmatches_career_scrape_dict['morematchmx'],
+                )
+
+            # combine player scrape dicts into one
+            player_scrape_dict = {
+                **player_jsmatches_scrape_dict,
+            }
 
             # continue with player data logic if data is returned from scraping
             if player_scrape_dict != {}:
 
-                logging.info(f"Data found for player url: {player_url}")
+                logging.info(f"Data found for player: {player_name}.")
 
                 # combine player data
                 player_data_dict = {
-                    **player_url_dict,
+                    **player_dict,
                     **player_scrape_dict,
                 }
 
-                # append to player list
+                # append to list
                 player_data_list.append(player_data_dict)
 
         return player_data_list
 
     except Exception as e:
-        logging.error(f"Error when scraping match data: {e}.")
+        logging.error(f"Error when scraping player data for {player_name}: {e}.")
         return []
-    
-    finally:
-        
-        # stop playwright
-        browser.close()
-        playwright.stop()
