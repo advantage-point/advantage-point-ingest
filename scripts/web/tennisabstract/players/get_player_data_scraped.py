@@ -53,7 +53,7 @@ def get_player_jsmatches_data_scraped(
                     )
 
                     # parse matchmx
-                    if val == 'matchmx':
+                    if var == 'matchmx':
                         val = ast.literal_eval(val)
                         val = parse_player_matchmx(player_matchmx_list=val)
 
@@ -137,7 +137,7 @@ def get_player_jsmatches_career_data_scraped(
                     )
 
                     # parse matchmx
-                    if val == 'morematchmx':
+                    if var == 'morematchmx':
                         val = ast.literal_eval(val)
                         val = parse_player_matchmx(player_matchmx_list=val)
 
