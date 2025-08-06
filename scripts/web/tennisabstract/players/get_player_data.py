@@ -50,8 +50,8 @@ def get_player_data(
 
             # get data from player classic scraping
             try:
-                logging.info(f"Getting player classic data from {player_classic_url}.")
                 player_classic_url = player_dict['player_classic_url']
+                logging.info(f"Getting player classic data from {player_classic_url}.")
                 player_classic_url_scrape_dict = get_player_classic_data_scraped(
                     player_classic_url=player_classic_url,
                     retries=3,
