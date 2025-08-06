@@ -121,12 +121,13 @@ def get_player_data(
                 player_jsmatches_url_scrape_dict = {}
 
             # combine player scrape dicts into one
-            # no need for 'jsmatches career' dict since it only contains morematchmx
-            # and that was combined with matchmx
+            # no need for 'jsmatches career' dict since it only contains morematchmx and that was combined with matchmx
+            # player_jsmatches_url_scrape_dict mentioned first since matchmx data can/should be overriden by matchmx in player_classic_url_scrape_dict
+            # ideally want player_classic_url_scrape_dict to override data
             player_scrape_dict = {
+                **player_jsmatches_url_scrape_dict,
                 **player_url_scrape_dict,
                 **player_classic_url_scrape_dict,
-                **player_jsmatches_url_scrape_dict,
             }
 
             # continue with player data logic if data is returned from scraping
