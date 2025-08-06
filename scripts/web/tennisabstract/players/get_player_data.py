@@ -35,22 +35,33 @@ def get_player_data(
             logging.info(f"({i+1}/{len(player_url_list)}) Getting player data for player: {player_name}.")
 
             # get data from player scraping
-            player_url = player_dict['player_url']
-            player_url_scrape_dict = get_player_data_scraped(
-                player_url=player_url,
-                retries=3,
-                delay=1
-            )
+            try:
+                logging.info(f"Getting player data from {player_url}.")
+                player_url = player_dict['player_url']
+                player_url_scrape_dict = get_player_data_scraped(
+                    player_url=player_url,
+                    retries=3,
+                    delay=1
+                )
+            
+            except Exception as e:
+                logging.info(f"Error getting player data from {player_url}: {e}.")
+                player_url_scrape_dict = {}
 
             # get data from player classic scraping
-            player_classic_url = player_dict['player_classic_url']
-            player_classic_url_scrape_dict = get_player_classic_data_scraped(
-                player_classic_url=player_classic_url,
-                retries=3,
-                delay=1
-            )
+            try:
+                logging.info(f"Getting player classic data from {player_classic_url}.")
+                player_classic_url = player_dict['player_classic_url']
+                player_classic_url_scrape_dict = get_player_classic_data_scraped(
+                    player_classic_url=player_classic_url,
+                    retries=3,
+                    delay=1
+                )
+            
+            except Exception as e:
+                logging.info(f"Error getting player classic data from {player_classic_url}: {e}.")
 
-            # if possible, get fullname to construct 'jsmatches' urls
+            # if possible, get fullname to construct 'jsmatches' urls -> get 'jsmatches' data
             player_fullname = player_url_scrape_dict['fullname'] or player_classic_url_scrape_dict['fullname']
             if player_fullname:
 
@@ -69,7 +80,7 @@ def get_player_data(
                     )
                 
                 except Exception as e:
-                    logging.info(f"Error when getting player jsmatches data: {e}.")
+                    logging.info(f"Error when getting player jsmatches data for {player_jsmatches_url}: {e}.")
                     player_jsmatches_url_scrape_dict = {}
 
                 # get data frm player jsmatches career scraping
@@ -86,7 +97,7 @@ def get_player_data(
                     )
                 
                 except Exception as e:
-                    logging.info(f"Error when getting player jsmatches career data: {e}.")
+                    logging.info(f"Error when getting player jsmatches career data for {player_jsmatches_career_url}: {e}.")
                     player_jsmatches_career_url_scrape_dict = {}
 
                 # combine the 'matchmx' arrays if overlap
