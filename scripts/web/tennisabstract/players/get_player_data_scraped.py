@@ -59,7 +59,7 @@ def get_player_data_scraped(
             # check if all values in dict are None
             if all(value is None for value in player_dict.values()):
                 
-                logging.info(f"All values None for {player_url}")
+                logging.info(f"All values None for: {player_url}")
                 
                 # Log which variables were not found
                 missing_vars = [var for var, val in player_dict.items() if val is None]
@@ -149,7 +149,7 @@ def get_player_classic_data_scraped(
             # check if all values in dict are None
             if all(value is None for value in player_dict.values()):
                 
-                logging.info(f"All values None for {player_classic_url}")
+                logging.info(f"All values None for: {player_classic_url}")
                 
                 # Log which variables were not found
                 missing_vars = [var for var, val in player_dict.items() if val is None]
@@ -218,7 +218,7 @@ def get_player_jsmatches_data_scraped(
             # navigate to the page
             response = make_request(url=player_jsmatches_url)
             response_text = response.text
-            soup = BeautifulSoup(response_text, 'html.parser')
+            # soup = BeautifulSoup(response_text, 'html.parser')
 
             for var in response_var_list:
                 try:
@@ -239,7 +239,7 @@ def get_player_jsmatches_data_scraped(
             # check if all values in dict are None
             if all(value is None for value in player_dict.values()):
                 
-                logging.info(f"All values None for {player_jsmatches_url}")
+                logging.info(f"All values None for: {repr(player_jsmatches_url)}")
                 
                 # Log which variables were not found
                 missing_vars = [var for var, val in player_dict.items() if val is None]
@@ -302,7 +302,7 @@ def get_player_jsmatches_career_data_scraped(
             # navigate to the page
             response = make_request(url=player_jsmatches_career_url)
             response_text = response.text
-            soup = BeautifulSoup(response_text, 'html.parser')
+            # soup = BeautifulSoup(response_text, 'html.parser')
 
             for var in response_var_list:
                 try:
@@ -323,7 +323,7 @@ def get_player_jsmatches_career_data_scraped(
             # check if all values in dict are None
             if all(value is None for value in player_dict.values()):
                 
-                logging.info(f"All values None for {player_jsmatches_career_url}")
+                logging.info(f"All values None for: {repr(player_jsmatches_career_url)}")
                 
                 # Log which variables were not found
                 missing_vars = [var for var, val in player_dict.items() if val is None]
