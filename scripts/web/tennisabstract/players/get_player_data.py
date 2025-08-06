@@ -133,5 +133,5 @@ def get_player_data(
         return player_data_list
 
     except Exception as e:
-        logging.error(f"Error when scraping player data for {player_name}: {e}.")
+        logging.error(f"Error when scraping player data: {e}.")
         return []
