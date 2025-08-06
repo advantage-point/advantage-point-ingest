@@ -121,7 +121,6 @@ def get_player_classic_data_scraped(
                 'dob', 'ht', 'hand', 'backhand', 'country', 'shortlist', 'careerjs', 'active', 'lastdate',
                 'twitter', 'current_dubs', 'peak_dubs', 'peakfirst_dubs', 'liverank', 'chartagg', 'photog', 'photog_credit', 'photog_link',
                 'itf_id', 'atp_id', 'dc_id', 'wiki_id', 'elo_rating', 'elo_rank',
-                'matchmx',
             ]
             player_dict = {var: None for var in response_var_list}
 
@@ -136,11 +135,6 @@ def get_player_classic_data_scraped(
                         content=response_text,
                         var=var
                     )
-
-                    # parse matchmx
-                    if var == 'matchmx':
-                        val = ast.literal_eval(val)
-                        val = parse_player_matchmx(player_matchmx_list=val)
 
                     player_dict[var] = val
                 except Exception as e:
