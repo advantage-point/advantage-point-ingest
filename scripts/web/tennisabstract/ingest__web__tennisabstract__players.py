@@ -9,6 +9,7 @@ from utils.bigquery.insert_target_table import insert_target_table
 from utils.bigquery.get_control_object_record_full import get_control_object_record_full
 from utils.bigquery.update_target_table import update_target_table
 from utils.cloud_storage.delete_cloud_storage_objects import delete_cloud_storage_objects
+from utils.cloud_storage.get_cloud_storage_objects import get_cloud_storage_objects
 from utils.cloud_storage.write_batch_to_cloud_storage import write_batch_to_cloud_storage
 import logging
 
@@ -85,82 +86,94 @@ def main():
                 object_path=cloudstorage_object_path
             )
 
-        # check target table existence
-        target_table_exists_flag = check_table_existence(
-            project_id=bigquery_target_project_id,
-            dataset_id=bigquery_target_dataset_id,
-            table_id=bigquery_target_table_id
+        # check cloud storage file(s) existence
+        cloud_storage_objects_list = get_cloud_storage_objects(
+            bucket_name=cloudstorage_bucket_name,
+            prefix=f"{cloudstorage_folder_name}/"
         )
+        cloud_storage_objects_exists_flag = len(cloud_storage_objects_list) > 0
 
-        if target_table_exists_flag == True:
+        if cloud_storage_objects_exists_flag == True:
 
-            # drop temp table
-            drop_table(
-                project_id=bigquery_temp_project_id,
-                dataset_id=bigquery_temp_dataset_id,
-                table_id=bigquery_temp_table_id
+            # check target table existence
+            target_table_exists_flag = check_table_existence(
+                project_id=bigquery_target_project_id,
+                dataset_id=bigquery_target_dataset_id,
+                table_id=bigquery_target_table_id
             )
 
-            # create temp table
-            create_table_with_cloud_storage(
-                cloudstorage_bucket_name=cloudstorage_bucket_name,
-                cloudstorage_object_pattern=cloudstorage_to_bigquery_object_pattern,
-                bigquery_project_id=bigquery_temp_project_id,
-                bigquery_dataset_id=bigquery_temp_dataset_id,
-                bigquery_dataset_location=bigquery_temp_dataset_location,
-                bigquery_table_id=bigquery_temp_table_id
-            )
+            if target_table_exists_flag == True:
+
+                # drop temp table
+                drop_table(
+                    project_id=bigquery_temp_project_id,
+                    dataset_id=bigquery_temp_dataset_id,
+                    table_id=bigquery_temp_table_id
+                )
+
+                # create temp table
+                create_table_with_cloud_storage(
+                    cloudstorage_bucket_name=cloudstorage_bucket_name,
+                    cloudstorage_object_pattern=cloudstorage_to_bigquery_object_pattern,
+                    bigquery_project_id=bigquery_temp_project_id,
+                    bigquery_dataset_id=bigquery_temp_dataset_id,
+                    bigquery_dataset_location=bigquery_temp_dataset_location,
+                    bigquery_table_id=bigquery_temp_table_id
+                )
+                
+                # alter target table
+                alter_target_table(
+                    target_project_id=bigquery_target_project_id,
+                    target_dataset_id=bigquery_target_dataset_id,
+                    target_table_id=bigquery_target_table_id,
+                    source_project_id=bigquery_temp_project_id,
+                    source_dataset_id=bigquery_temp_dataset_id,
+                    source_table_id=bigquery_temp_table_id,
+                    unique_column_name_list=unique_column_name_list
+                )
+
+                # update target table
+                update_target_table(
+                    target_project_id=bigquery_target_project_id,
+                    target_dataset_id=bigquery_target_dataset_id,
+                    target_table_id=bigquery_target_table_id,
+                    source_project_id=bigquery_temp_project_id,
+                    source_dataset_id=bigquery_temp_dataset_id,
+                    source_table_id=bigquery_temp_table_id,
+                    unique_column_name_list=unique_column_name_list
+                )
+
+                # insert
+                insert_target_table(
+                    target_project_id=bigquery_target_project_id,
+                    target_dataset_id=bigquery_target_dataset_id,
+                    target_table_id=bigquery_target_table_id,
+                    source_project_id=bigquery_temp_project_id,
+                    source_dataset_id=bigquery_temp_dataset_id,
+                    source_table_id=bigquery_temp_table_id,
+                    unique_column_name_list=unique_column_name_list
+                )
+
+                # drop temp table
+                drop_table(
+                    project_id=bigquery_temp_project_id,
+                    dataset_id=bigquery_temp_dataset_id,
+                    table_id=bigquery_temp_table_id
+                )
             
-            # alter target table
-            alter_target_table(
-                target_project_id=bigquery_target_project_id,
-                target_dataset_id=bigquery_target_dataset_id,
-                target_table_id=bigquery_target_table_id,
-                source_project_id=bigquery_temp_project_id,
-                source_dataset_id=bigquery_temp_dataset_id,
-                source_table_id=bigquery_temp_table_id,
-                unique_column_name_list=unique_column_name_list
-            )
-
-            # update target table
-            update_target_table(
-                target_project_id=bigquery_target_project_id,
-                target_dataset_id=bigquery_target_dataset_id,
-                target_table_id=bigquery_target_table_id,
-                source_project_id=bigquery_temp_project_id,
-                source_dataset_id=bigquery_temp_dataset_id,
-                source_table_id=bigquery_temp_table_id,
-                unique_column_name_list=unique_column_name_list
-            )
-
-            # insert
-            insert_target_table(
-                target_project_id=bigquery_target_project_id,
-                target_dataset_id=bigquery_target_dataset_id,
-                target_table_id=bigquery_target_table_id,
-                source_project_id=bigquery_temp_project_id,
-                source_dataset_id=bigquery_temp_dataset_id,
-                source_table_id=bigquery_temp_table_id,
-                unique_column_name_list=unique_column_name_list
-            )
-
-            # drop temp table
-            drop_table(
-                project_id=bigquery_temp_project_id,
-                dataset_id=bigquery_temp_dataset_id,
-                table_id=bigquery_temp_table_id
-            )
+            else:
+                # otherwise create/load target table
+                create_table_with_cloud_storage(
+                    cloudstorage_bucket_name=cloudstorage_bucket_name,
+                    cloudstorage_object_pattern=cloudstorage_to_bigquery_object_pattern,
+                    bigquery_project_id=bigquery_target_project_id,
+                    bigquery_dataset_id=bigquery_target_dataset_id,
+                    bigquery_dataset_location=bigquery_target_dataset_location,
+                    bigquery_table_id=bigquery_target_table_id
+                )
         
         else:
-            # otherwise create/load target table
-            create_table_with_cloud_storage(
-                cloudstorage_bucket_name=cloudstorage_bucket_name,
-                cloudstorage_object_pattern=cloudstorage_to_bigquery_object_pattern,
-                bigquery_project_id=bigquery_target_project_id,
-                bigquery_dataset_id=bigquery_target_dataset_id,
-                bigquery_dataset_location=bigquery_target_dataset_location,
-                bigquery_table_id=bigquery_target_table_id
-            )
+            logging.info(f"No data ingested into Cloud Storage.")
 
     except Exception as e:
         logging.error(f"Error with ingestion process for {bigquery_target_table_id}: {e}")
