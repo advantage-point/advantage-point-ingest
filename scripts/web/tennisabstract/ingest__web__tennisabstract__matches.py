@@ -85,14 +85,16 @@ def main():
                 match_url_list=match_url_list_batch
             )
 
-            # upload to cloud storage
-            cloudstorage_object_name = f"{cloudstorage_object_name_prefix}__{today_str}__{batch_number_fmt}.json"
-            cloudstorage_object_path = f"{cloudstorage_folder_name}/{cloudstorage_object_name}"
-            write_batch_to_cloud_storage(
-                record_list=match_data_list,
-                bucket_name=cloudstorage_bucket_name,
-                object_path=cloudstorage_object_path
-            )
+            if match_data_list:
+
+                # upload to cloud storage
+                cloudstorage_object_name = f"{cloudstorage_object_name_prefix}__{today_str}__{batch_number_fmt}.json"
+                cloudstorage_object_path = f"{cloudstorage_folder_name}/{cloudstorage_object_name}"
+                write_batch_to_cloud_storage(
+                    record_list=match_data_list,
+                    bucket_name=cloudstorage_bucket_name,
+                    object_path=cloudstorage_object_path
+                )
             
             # upload_df_to_cloud_storage(
             #     df=match_data_df,

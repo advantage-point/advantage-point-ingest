@@ -77,14 +77,16 @@ def main():
                 player_url_list=player_url_list_batch
             )
 
-            # upload to cloud storage
-            cloudstorage_object_name = f"{cloudstorage_object_name_prefix}__{today_str}__{batch_number_fmt}.json"
-            cloudstorage_object_path = f"{cloudstorage_folder_name}/{cloudstorage_object_name}"
-            write_batch_to_cloud_storage(
-                record_list=player_data_list,
-                bucket_name=cloudstorage_bucket_name,
-                object_path=cloudstorage_object_path
-            )
+            if player_data_list:
+
+                # upload to cloud storage
+                cloudstorage_object_name = f"{cloudstorage_object_name_prefix}__{today_str}__{batch_number_fmt}.json"
+                cloudstorage_object_path = f"{cloudstorage_folder_name}/{cloudstorage_object_name}"
+                write_batch_to_cloud_storage(
+                    record_list=player_data_list,
+                    bucket_name=cloudstorage_bucket_name,
+                    object_path=cloudstorage_object_path
+                )
 
         # check cloud storage file(s) existence
         cloud_storage_objects_list = get_cloud_storage_objects(
