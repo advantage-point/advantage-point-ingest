@@ -36,8 +36,8 @@ def get_player_data(
 
             # get data from player scraping
             try:
-                logging.info(f"Getting player data from {player_url}.")
                 player_url = player_dict['player_url']
+                logging.info(f"Getting player data from {player_url}.")
                 player_url_scrape_dict = get_player_data_scraped(
                     player_url=player_url,
                     retries=3,
