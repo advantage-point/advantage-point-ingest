@@ -3,7 +3,7 @@ from typing import (
     List,
 )
 from scripts.web.tennisabstract.matches.get_match_data_scraped import get_match_data_scraped
-# from scripts.web.tennisabstract.matches.get_match_data_url import get_match_data_url
+from utils.python.combine_dicts import combine_dicts
 import logging
 
 def get_match_data(
@@ -42,10 +42,10 @@ def get_match_data(
                 logging.info(f"Data found for match url: {match_url}")
 
                 # combine match data
-                match_data_dict = {
-                    **match_dict,
-                    **match_scrape_dict,
-                }
+                match_data_dict = combine_dicts(
+                    match_dict,
+                    match_scrape_dict
+                )
 
                 # append to list
                 match_data_list.append(match_data_dict)
