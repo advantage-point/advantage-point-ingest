@@ -12,6 +12,7 @@ from typing import (
     Dict,
     List,
 )
+from utils.python.combine_dicts import combine_dicts
 from utils.python.combine_list_of_dicts import combine_list_of_dicts
 import logging
 
@@ -24,6 +25,12 @@ def get_player_data(
 
     Create list of player data from list of player urls.
     """
+
+    # set logging config
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s - %(levelname)s - %(filename)s:%(lineno)d - %(message)s"
+    )
 
     try:
 
@@ -122,13 +129,12 @@ def get_player_data(
 
             # combine player scrape dicts into one
             # no need for 'jsmatches career' dict since it only contains morematchmx and that was combined with matchmx
-            # player_jsmatches_url_scrape_dict mentioned first since matchmx data can/should be overriden by matchmx in player_classic_url_scrape_dict
             # ideally want player_classic_url_scrape_dict to override data
-            player_scrape_dict = {
-                **player_jsmatches_url_scrape_dict,
-                **player_url_scrape_dict,
-                **player_classic_url_scrape_dict,
-            }
+            player_scrape_dict = combine_dicts(
+                player_jsmatches_url_scrape_dict,
+                player_url_scrape_dict,
+                player_classic_url_scrape_dict
+            )
 
             # continue with player data logic if data is returned from scraping
             if player_scrape_dict != {}:
@@ -136,10 +142,10 @@ def get_player_data(
                 logging.info(f"Data found for player: {player_name}.")
 
                 # combine player data
-                player_data_dict = {
-                    **player_dict,
-                    **player_scrape_dict,
-                }
+                player_data_dict = combine_dicts(
+                    player_dict,
+                    player_scrape_dict,
+                )
 
                 # append to list
                 player_data_list.append(player_data_dict)

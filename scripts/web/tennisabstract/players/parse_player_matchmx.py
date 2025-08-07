@@ -2,6 +2,7 @@ from typing import (
     Dict,
     List,
 )
+import logging
 
 def parse_player_matchmx(
     player_matchmx_list: List[List]
@@ -13,31 +14,33 @@ def parse_player_matchmx(
     Loops through list and returns list of player match dictionaries.
     """
 
-    # set header list
-    matchmx_header_list = [
-        "date","tourn","surf","level","wl","rank","seed","entry","round",
-        "score","max","opp","orank","oseed","oentry","ohand","obday",
-        "oht","ocountry","oactive","time","aces","dfs","pts","firsts","fwon",
-        "swon",'games',"saved","chances","oaces","odfs","opts","ofirsts",
-        "ofwon","oswon",'ogames',"osaved","ochances","obackhand","chartlink",
-        "pslink","whserver","matchid",
-    ]
-
-    # loop through matchmx list
-    matchmx_data_list = []
-    for matchmx in player_matchmx_list:
+    try:
         
-        # initialize dict
-        matchmx_dict = {}
-
-        # loop through each matchmx record
-        for i, matchmx_elem in enumerate(matchmx):
-            
-            # set header-value pairs
-            matchmx_header = matchmx_header_list[i]
-            matchmx_dict[matchmx_header] = matchmx_elem
+        # set header list
+        matchmx_header_list = [
+            "date", "tourn", "surf", "level", "wl", "rank", "seed", "entry", "round", "score", "max",
+            "opp", "orank", "oseed", "oentry", "ohand", "obday", "oht", "ocountry", "oactive", "time",
+            "aces", "dfs", "pts", "firsts", "fwon", "swon", "games", "saved", "chances",
+            "oaces", "odfs", "opts", "ofirsts", "ofwon", "oswon", "ogames", "osaved", "ochances", "obackhand",
+            "chartlink", "pslink", "whserver", "matchid", "wh", "roundnum", "matchnum",
+        ]
         
-        # append to list
-        matchmx_data_list.append(matchmx_dict)
 
-    return matchmx_data_list
+        # loop through matchmx list
+        matchmx_data_list = []
+
+        for matchmx in player_matchmx_list:
+
+            # Skip if incomplete
+            if len(matchmx) != len(matchmx_header_list):
+                logging.info(f"Header count ({len(matchmx_header_list)}) does not match value count ({len(matchmx)}).")
+                continue
+
+            matchmx_dict = dict(zip(matchmx_header_list, matchmx))
+
+            matchmx_data_list.append(matchmx_dict)
+
+        return matchmx_data_list
+    
+    except Exception as e:
+        logging.error(f"Error when parsing matchmx: {e}.")

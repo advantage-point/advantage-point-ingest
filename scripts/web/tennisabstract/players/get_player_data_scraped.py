@@ -4,7 +4,10 @@ from typing import (
 )
 from scripts.web.tennisabstract.players.parse_player_matchmx import parse_player_matchmx
 from utils.web.make_request import make_request
-from utils.web.scrape_javascript_var import scrape_javascript_var
+from utils.web.scrape_javascript_var import (
+    scrape_javascript_multiline_var,
+    scrape_javascript_var,
+)
 import ast
 import logging
 import time
@@ -216,15 +219,20 @@ def get_player_jsmatches_data_scraped(
 
             for var in response_var_list:
                 try:
-                    val = scrape_javascript_var(
-                        content=response_text,
-                        var=var
-                    )
-
                     # parse matchmx
                     if var == 'matchmx':
+                        val = scrape_javascript_multiline_var(
+                            content=response_text,
+                            var=var
+                        )
                         val = ast.literal_eval(val)
                         val = parse_player_matchmx(player_matchmx_list=val)
+
+                    else:
+                        val = scrape_javascript_var(
+                            content=response_text,
+                            var=var
+                        )
 
                     player_dict[var] = val
                 except Exception as e:
@@ -300,15 +308,20 @@ def get_player_jsmatches_career_data_scraped(
 
             for var in response_var_list:
                 try:
-                    val = scrape_javascript_var(
-                        content=response_text,
-                        var=var
-                    )
-
                     # parse matchmx
                     if var == 'morematchmx':
+                        val = scrape_javascript_multiline_var(
+                            content=response_text,
+                            var=var
+                        )
                         val = ast.literal_eval(val)
                         val = parse_player_matchmx(player_matchmx_list=val)
+
+                    else:
+                        val = scrape_javascript_var(
+                            content=response_text,
+                            var=var
+                        )
 
                     player_dict[var] = val
                 except Exception as e:
