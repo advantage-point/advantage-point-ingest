@@ -61,7 +61,7 @@ def create_player_jsmatches_url(
 
 def create_player_jsmatches_career_url(
     player_name: str
-) -> str:
+) -> str:   
     """
     Arguments:
     - player_name: Player name
