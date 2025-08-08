@@ -4,7 +4,7 @@ from typing import (
 )
 import logging
 
-def parse_player_matchmx(
+def parse_player_jsmatches_matchmx(
     player_matchmx_list: List[List]
 ) -> List[Dict]:
     """

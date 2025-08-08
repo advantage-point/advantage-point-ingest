@@ -2,7 +2,9 @@ from bs4 import BeautifulSoup
 from typing import (
     Dict,
 )
-from scripts.web.tennisabstract.players.parse_player_matchmx import parse_player_matchmx
+from scripts.web.tennisabstract.players.parse_player_matchmx import (
+    parse_player_jsmatches_matchmx
+)
 from utils.web.make_request import make_request
 from utils.web.scrape_javascript_var import (
     scrape_javascript_multiline_var,
@@ -226,7 +228,7 @@ def get_player_jsmatches_data_scraped(
                             var=var
                         )
                         val = ast.literal_eval(val)
-                        val = parse_player_matchmx(player_matchmx_list=val)
+                        val = parse_player_jsmatches_matchmx(player_matchmx_list=val)
 
                     else:
                         val = scrape_javascript_var(
@@ -315,7 +317,7 @@ def get_player_jsmatches_career_data_scraped(
                             var=var
                         )
                         val = ast.literal_eval(val)
-                        val = parse_player_matchmx(player_matchmx_list=val)
+                        val = parse_player_jsmatches_matchmx(player_matchmx_list=val)
 
                     else:
                         val = scrape_javascript_var(
