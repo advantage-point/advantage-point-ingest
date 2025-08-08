@@ -220,7 +220,7 @@ def get_player_jsmatches_data_scraped(
                 'nameparam', 'fullname', 'lastname', 'currentrank', 'peakrank', 'peakfirst', 'peaklast',
                 'dob', 'ht', 'hand', 'backhand', 'country', 'shortlist', 'careerjs', 'active', 'lastdate',
                 'twitter', 'current_dubs', 'peak_dubs', 'peakfirst_dubs', 'liverank', 'chartagg', 'photog', 'photog_credit', 'photog_link',
-                'itf_id', 'atp_id', 'dc_id', 'wiki_id', 'elo_rating', 'elo_rank',
+                'itf_id', 'atp_id', 'dc_id', 'wta_id', 'fc_id', 'wiki_id', 'blast_link', 'more_link', 'death_date', 'dob_approx', 'elo_rating', 'elo_rank',
                 'matchmx',
             ]
             player_dict = {var: None for var in response_var_list}
