@@ -4,6 +4,7 @@ from scripts.web.tennisabstract.players.get_player_url_list import get_player_ur
 from utils.bigquery.alter_target_table import alter_target_table
 from utils.bigquery.check_table_existence import check_table_existence
 from utils.bigquery.create_table_with_cloud_storage import create_table_with_cloud_storage
+from utils.bigquery.create_target_table import create_target_table_with_cloud_storage
 from utils.bigquery.drop_table import drop_table
 from utils.bigquery.insert_target_table import insert_target_table
 from utils.bigquery.get_control_object_record_full import get_control_object_record_full
@@ -165,7 +166,7 @@ def main():
             
             else:
                 # otherwise create/load target table
-                create_table_with_cloud_storage(
+                create_target_table_with_cloud_storage(
                     cloudstorage_bucket_name=cloudstorage_bucket_name,
                     cloudstorage_object_pattern=cloudstorage_to_bigquery_object_pattern,
                     bigquery_project_id=bigquery_target_project_id,
