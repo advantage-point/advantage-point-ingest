@@ -61,6 +61,7 @@ def get_player_data_scraped(
                     player_dict[var] = val
                 except Exception as e:
                     logging.info(f"Error encountered when getting data for variable {var}: {e}")
+                    continue
 
             # check if all values in dict are None
             if all(value is None for value in player_dict.values()):
@@ -155,6 +156,7 @@ def get_player_classic_data_scraped(
                     player_dict[var] = val
                 except Exception as e:
                     logging.info(f"Error encountered when getting data for variable {var}: {e}")
+                    continue
 
             # check if all values in dict are None
             if all(value is None for value in player_dict.values()):
@@ -250,6 +252,7 @@ def get_player_jsmatches_data_scraped(
                     player_dict[var] = val
                 except Exception as e:
                     logging.info(f"Error encountered when getting data for variable {var}: {e}")
+                    continue
 
             # check if all values in dict are None
             if all(value is None for value in player_dict.values()):
@@ -339,6 +342,7 @@ def get_player_jsmatches_career_data_scraped(
                     player_dict[var] = val
                 except Exception as e:
                     logging.info(f"Error encountered when getting data for variable {var}: {e}")
+                    continue
 
             # check if all values in dict are None
             if all(value is None for value in player_dict.values()):
