@@ -70,7 +70,7 @@ def get_player_data(
 
             # if possible, get fullname to construct 'jsmatches' urls -> get 'jsmatches' data
             try:
-                player_fullname = player_url_scrape_dict['fullname'] or player_classic_url_scrape_dict['fullname']
+                player_fullname = player_url_scrape_dict['fullname'] or player_classic_url_scrape_dict['fullname'] or player_name
                 player_fullname = player_fullname.replace("'", "")
                 if player_fullname:
 
