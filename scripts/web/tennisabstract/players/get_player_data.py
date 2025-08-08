@@ -81,7 +81,7 @@ def get_player_data(
                             player_name=player_fullname
                         )
                         player_dict['player_jsmatches_url'] = player_jsmatches_url
-                    
+                        logging.info(f"Getting player jsmatches data from {player_jsmatches_url}.")
                         player_jsmatches_url_scrape_dict = get_player_jsmatches_data_scraped(
                             player_jsmatches_url=player_jsmatches_url,
                             retries=3,
@@ -99,6 +99,7 @@ def get_player_data(
                             player_name=player_fullname
                         )
                         player_dict['player_jsmatches_career_url'] = player_jsmatches_career_url
+                        logging.info(f"Getting player jsmatches career data from {player_jsmatches_career_url}.")
                         player_jsmatches_career_url_scrape_dict = get_player_jsmatches_career_data_scraped(
                             player_jsmatches_career_url=player_jsmatches_career_url,
                             retries=3,
