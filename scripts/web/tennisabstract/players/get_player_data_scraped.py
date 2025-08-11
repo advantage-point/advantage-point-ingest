@@ -57,7 +57,7 @@ def get_player_data_scraped(
                         var=var
                     )
                     if isinstance(val, int) == True:
-                        val = f'"{val}"'
+                        val = str(val)
 
                     player_dict[var] = val
                 except Exception as e:
@@ -154,7 +154,7 @@ def get_player_classic_data_scraped(
                             var=var
                         )
                         if isinstance(val, int) == True:
-                            val = f'"{val}"'
+                            val = str(val)
 
                     player_dict[var] = val
                 except Exception as e:
