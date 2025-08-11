@@ -56,8 +56,6 @@ def get_player_data_scraped(
                         content=response_text,
                         var=var
                     )
-                    if isinstance(val, int) == True:
-                        val = str(val)
 
                     player_dict[var] = val
                 except Exception as e:
@@ -153,9 +151,7 @@ def get_player_classic_data_scraped(
                             content=response_text,
                             var=var
                         )
-                        if isinstance(val, int) == True:
-                            val = str(val)
-
+                        
                     player_dict[var] = val
                 except Exception as e:
                     logging.info(f"Error encountered when getting data for variable {var}: {e}")
