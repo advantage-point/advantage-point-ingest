@@ -48,7 +48,7 @@ def get_player_data_scraped(
             # navigate to the page
             response = make_request(url=player_url)
             response_text = response.text
-            soup = BeautifulSoup(response_text, 'html.parser')
+            # soup = BeautifulSoup(response_text, 'html.parser')
 
             for var in response_var_list:
                 try:
@@ -56,6 +56,8 @@ def get_player_data_scraped(
                         content=response_text,
                         var=var
                     )
+                    if isinstance(val, int) == True:
+                        val = str(val)
 
                     player_dict[var] = val
                 except Exception as e:
@@ -133,7 +135,7 @@ def get_player_classic_data_scraped(
             # navigate to the page
             response = make_request(url=player_classic_url)
             response_text = response.text
-            soup = BeautifulSoup(response_text, 'html.parser')
+            # soup = BeautifulSoup(response_text, 'html.parser')
 
             for var in response_var_list:
                 try:
@@ -151,6 +153,8 @@ def get_player_classic_data_scraped(
                             content=response_text,
                             var=var
                         )
+                        if isinstance(val, int) == True:
+                            val = str(val)
 
                     player_dict[var] = val
                 except Exception as e:
