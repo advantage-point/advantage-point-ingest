@@ -66,6 +66,8 @@ def get_player_jsmatches_data_scraped(
                             content=response_text,
                             var=var
                         )
+                        if isinstance(val, int) == True:
+                            val = f'"{val}"'
 
                     player_dict[var] = val
                 except Exception as e:
@@ -156,6 +158,8 @@ def get_player_jsmatches_career_data_scraped(
                             content=response_text,
                             var=var
                         )
+                        if isinstance(val, int) == True:
+                            val = f'"{val}"'
 
                     player_dict[var] = val
                 except Exception as e:
