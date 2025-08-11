@@ -2,11 +2,14 @@ from typing import (
     Dict,
     List,
 )
-
+from scripts.web.tennisabstract.matches.get_match_url_list import (
+    get_match_url_list,
+)
 from scripts.web.tennisabstract.players.create_player_url import (
     create_player_url,
     create_player_classic_url,
 )
+from utils.python.combine_list_of_dicts import combine_list_of_dicts
 from utils.web.scrape_javascript_var import scrape_javascript_var
 from utils.web.make_request import make_request
 import ast
@@ -60,4 +63,56 @@ def get_player_url_list() -> List[Dict]:
 
         player_url_list.append(player_url_dict)
 
+    return player_url_list
+
+def get_player_url_list_from_matches() -> List[Dict]:
+    """
+    Returns list of player urls using the match url list.
+    """
+
+    # get match url list
+    match_url_list = get_match_url_list()
+
+    # initialize player dicts
+    player_one_url_list = []
+    player_two_url_list = []
+
+    # loop through match data
+    for match_url_dict in match_url_list:
+
+        # create player dicts and append to player lists
+        player_one_url_dict = {
+            'player_name': match_url_dict['match_player_one'].replace('_', ' '),
+            'player_gender': match_url_dict['match_gender'],
+        }
+        player_one_url_list.append(player_one_url_dict)
+        player_two_url_dict = {
+            'player_name': match_url_dict['match_player_two'].replace('_', ' '),
+            'player_gender': match_url_dict['match_gender'],
+        }
+        player_two_url_list.append(player_two_url_dict)
+
+    # combine player lists
+    player_url_list = combine_list_of_dicts(
+        player_one_url_list,
+        player_two_url_list
+    )
+
+    # loop through player list
+    for player_url_dict in player_url_list:
+
+        # create url
+        player_url = create_player_url(
+            player_gender=player_url_dict['player_gender'],
+            player_name=player_url_dict['player_name']
+        )
+        player_url_dict['player_url'] = player_url
+
+        # create player classic url
+        player_classic_url = create_player_classic_url(
+            player_name=player_url_dict['player_name'],
+            player_gender=player_url_dict['player_gender']
+        )
+        player_url_dict['player_classic_url'] = player_classic_url
+        
     return player_url_list

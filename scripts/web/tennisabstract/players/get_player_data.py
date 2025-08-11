@@ -7,7 +7,7 @@ from typing import (
     List,
 )
 from utils.python.combine_dicts import combine_dicts
-from utils.python.combine_list_of_dicts import combine_list_of_dicts
+# from utils.python.combine_list_of_dicts import combine_list_of_dicts
 import logging
 
 def get_player_data(

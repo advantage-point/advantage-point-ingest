@@ -1,6 +1,6 @@
 from datetime import datetime
 from scripts.web.tennisabstract.players.get_player_data import get_player_data
-from scripts.web.tennisabstract.players.get_player_url_list import get_player_url_list
+from scripts.web.tennisabstract.players.get_player_url_list import get_player_url_list_from_matches as get_player_url_list
 from utils.bigquery.alter_target_table import alter_target_table
 from utils.bigquery.check_table_existence import check_table_existence
 from utils.bigquery.create_table_with_cloud_storage import create_table_with_cloud_storage
