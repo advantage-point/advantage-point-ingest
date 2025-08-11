@@ -1,4 +1,4 @@
-from scripts.web.tennisabstract.players.get_player_data_scraped import (
+from scripts.web.tennisabstract.players_jsmatches.get_player_jsmatches_data_scraped import (
     get_player_jsmatches_data_scraped,
     get_player_jsmatches_career_data_scraped,
 )
