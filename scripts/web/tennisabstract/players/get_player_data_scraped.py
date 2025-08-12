@@ -11,6 +11,7 @@ from utils.web.scrape_javascript_var import (
     scrape_javascript_var,
 )
 import ast
+import json
 import logging
 import time
 
@@ -57,11 +58,8 @@ def get_player_data_scraped(
                         var=var
                     )
 
-                    # if value is None -> make it empty string
-                    if val is None:
-                        val = "''"
                     # add extra quotes around the value if not exists
-                    elif ("'" not in val) and ('"' not in val) :
+                    if (val is not None) and ("'" not in val) and ('"' not in val) :
                         val = f"'{val}'"
 
                     player_dict[var] = val
@@ -153,14 +151,13 @@ def get_player_classic_data_scraped(
                                 var=var
                             )
 
-                            if val is None:
-                                val = '[]'
-                            else:
+                            # convert to string if not null
+                            if val is not None:
                                 val = ast.literal_eval(val)
                                 val = parse_player_classic_matchmx(player_matchmx_list=val)
+                                val = json.dumps(val)
                         except Exception as e:
                             logging.error(f"Error scraping {var}: {e}.")
-                            val = '[]'
                             
 
                     else:
@@ -169,11 +166,8 @@ def get_player_classic_data_scraped(
                             var=var
                         )
 
-                        # if value is None -> make it empty string
-                        if val is None:
-                            val = "''"
-                        # add extra quotes around the value if not exists
-                        elif ("'" not in val) and ('"' not in val) :
+                        # convert to string: add extra quotes around the value if not exists
+                        if (val is not None) and ("'" not in val) and ('"' not in val) :
                             val = f"'{val}'"
                         
                     player_dict[var] = val

@@ -1,7 +1,6 @@
 from typing import (
     List,
 )
-import json
 import logging
 
 def parse_player_classic_matchmx(
@@ -82,8 +81,7 @@ def parse_player_classic_matchmx(
 
             matchmx_data_list.append(matchmx_dict)
 
-        return json.dumps(matchmx_data_list)
+        return matchmx_data_list
     
     except Exception as e:
         logging.error(f"Error when parsing matchmx: {e}.")
-        return '[]'
