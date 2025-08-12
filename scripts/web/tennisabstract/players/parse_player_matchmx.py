@@ -1,12 +1,12 @@
 from typing import (
-    Dict,
     List,
 )
+import json
 import logging
 
 def parse_player_classic_matchmx(
     player_matchmx_list: List[List]
-) -> List[Dict]:
+) -> str:
     """
     Arguments:
     - player_matchmx_list: List of player matchmx data (as lists)
@@ -82,8 +82,8 @@ def parse_player_classic_matchmx(
 
             matchmx_data_list.append(matchmx_dict)
 
-        return matchmx_data_list
+        return json.dumps(matchmx_data_list)
     
     except Exception as e:
         logging.error(f"Error when parsing matchmx: {e}.")
-        return []
+        return '[]'
