@@ -147,12 +147,17 @@ def get_player_classic_data_scraped(
                 try:
                     # parse matchmx
                     if var == 'matchmx':
-                        val = scrape_javascript_multiline_var(
-                            content=response_text,
-                            var=var
-                        )
-                        val = ast.literal_eval(val)
-                        val = parse_player_classic_matchmx(player_matchmx_list=val)
+                        try:
+                            val = scrape_javascript_multiline_var(
+                                content=response_text,
+                                var=var
+                            )
+                            val = ast.literal_eval(val)
+                            val = parse_player_classic_matchmx(player_matchmx_list=val)
+                        except Exception as e:
+                            logging.error(f"Error scraping {var}: {e}.")
+                            val = []
+                            
 
                     else:
                         val = scrape_javascript_var(
@@ -208,3 +213,7 @@ def get_player_classic_data_scraped(
     # Return empty dictionary if all retries fail
     logging.info(f"Returning empty dictionary")
     return {}
+
+player_classic_url = 'https://www.tennisabstract.com/cgi-bin/wplayer-classic.cgi?p=YidiYang'
+player_classic_dict = get_player_classic_data_scraped(player_classic_url=player_classic_url)
+print(player_classic_dict)
