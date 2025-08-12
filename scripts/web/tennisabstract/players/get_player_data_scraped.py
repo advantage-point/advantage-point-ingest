@@ -56,7 +56,7 @@ def get_player_data_scraped(
                         content=response_text,
                         var=var
                     )
-                    
+
                     # if value is None -> make it empty string
                     if val is None:
                         val = "''"
@@ -134,6 +134,7 @@ def get_player_classic_data_scraped(
                 'dob', 'ht', 'hand', 'backhand', 'country', 'shortlist', 'careerjs', 'active', 'lastdate',
                 'twitter', 'current_dubs', 'peak_dubs', 'peakfirst_dubs', 'liverank', 'chartagg', 'photog', 'photog_credit', 'photog_link',
                 'itf_id', 'atp_id', 'dc_id', 'wiki_id', 'elo_rating', 'elo_rank',
+                'matchmx',
             ]
             player_dict = {var: None for var in response_var_list}
 

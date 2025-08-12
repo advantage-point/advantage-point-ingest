@@ -86,3 +86,4 @@ def parse_player_classic_matchmx(
     
     except Exception as e:
         logging.error(f"Error when parsing matchmx: {e}.")
+        return []
