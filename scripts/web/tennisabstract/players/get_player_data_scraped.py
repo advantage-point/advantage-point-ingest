@@ -56,9 +56,13 @@ def get_player_data_scraped(
                         content=response_text,
                         var=var
                     )
-                    # # add extra quotes around the value if not exists
-                    if ("'" not in val) and ('"' not in val) and (val is not None):
-                        val = f"'{val}"
+                    
+                    # if value is None -> make it empty string
+                    if val is None:
+                        val = "''"
+                    # add extra quotes around the value if not exists
+                    elif ("'" not in val) and ('"' not in val) :
+                        val = f"'{val}'"
 
                     player_dict[var] = val
                 except Exception as e:
@@ -154,9 +158,13 @@ def get_player_classic_data_scraped(
                             content=response_text,
                             var=var
                         )
+
+                        # if value is None -> make it empty string
+                        if val is None:
+                            val = "''"
                         # add extra quotes around the value if not exists
-                        if ("'" not in val) and ('"' not in val) and (val is not None):
-                            val = f"'{val}"
+                        elif ("'" not in val) and ('"' not in val) :
+                            val = f"'{val}'"
                         
                     player_dict[var] = val
                 except Exception as e:
