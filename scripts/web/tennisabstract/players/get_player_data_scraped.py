@@ -152,8 +152,12 @@ def get_player_classic_data_scraped(
                                 content=response_text,
                                 var=var
                             )
-                            val = ast.literal_eval(val)
-                            val = parse_player_classic_matchmx(player_matchmx_list=val)
+                            
+                            if val is None:
+                                val = []
+                            else:
+                                val = ast.literal_eval(val)
+                                val = parse_player_classic_matchmx(player_matchmx_list=val)
                         except Exception as e:
                             logging.error(f"Error scraping {var}: {e}.")
                             val = []
