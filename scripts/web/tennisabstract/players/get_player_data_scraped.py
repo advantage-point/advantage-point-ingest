@@ -152,7 +152,7 @@ def get_player_classic_data_scraped(
                                 content=response_text,
                                 var=var
                             )
-                            
+
                             if val is None:
                                 val = []
                             else:
@@ -217,7 +217,3 @@ def get_player_classic_data_scraped(
     # Return empty dictionary if all retries fail
     logging.info(f"Returning empty dictionary")
     return {}
-
-player_classic_url = 'https://www.tennisabstract.com/cgi-bin/wplayer-classic.cgi?p=YidiYang'
-player_classic_dict = get_player_classic_data_scraped(player_classic_url=player_classic_url)
-print(player_classic_dict)
