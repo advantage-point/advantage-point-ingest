@@ -33,7 +33,7 @@ def main():
         )
 
         # get player url list
-        player_url_list = get_player_url_list()
+        player_url_list = get_player_url_list()[:30]
         player_url_list_len = len(player_url_list)
 
         # parse control table record
