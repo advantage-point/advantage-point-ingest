@@ -258,7 +258,7 @@ def get_player_data_scraped_test(
                     if (val is not None) and (val != '') and (val != "") and (val != "''") and (val != '""'):
                         # check if quotes exist in string
                         if ('"' not in val) and ("'" not in val):
-                            val = f'"{val}"'
+                            val = f"'{val}'"
                         
                         # add to dict
                         player_dict[var] = val
@@ -368,7 +368,7 @@ def get_player_classic_data_scraped_test(
                         if (val is not None) and (val != '') and (val != "") and (val != "''") and (val != '""'):
                             # check if quotes exist in string
                             if ('"' not in val) and ("'" not in val):
-                                val = f'"{val}"'
+                                val = f"'{val}'"
                         
                             # append to dict
                             player_dict[var] = val
