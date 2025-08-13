@@ -1,6 +1,6 @@
 from scripts.web.tennisabstract.players.get_player_data_scraped import (
-    get_player_data_scraped,
-    get_player_classic_data_scraped,
+    get_player_data_scraped_test as get_player_data_scraped,
+    get_player_classic_data_scraped_test as get_player_classic_data_scraped,
 )
 from typing import (
     Dict,
