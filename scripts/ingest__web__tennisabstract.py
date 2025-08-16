@@ -93,7 +93,8 @@ def main(
                 url_list=url_list
             )
 
-            if data_df:
+            # check if dataframe is not empty
+            if data_df.empty() != True:
 
                 # upload to cloud storage
                 cloudstorage_object_name = f"{cloudstorage_object_name_prefix}__{today_str}__{batch_number_fmt}.json"
