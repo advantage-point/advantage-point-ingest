@@ -10,6 +10,7 @@ from utils.bigquery.update_target_table import update_target_table
 from utils.cloud_storage.delete_cloud_storage_objects import delete_cloud_storage_objects
 from utils.cloud_storage.get_cloud_storage_objects import get_cloud_storage_objects
 from utils.cloud_storage.upload_df_to_cloud_storage import upload_df_to_cloud_storage
+from utils.python.map_python_type_to_bq import map_python_type_to_bq
 import argparse
 import importlib
 import logging
@@ -74,6 +75,9 @@ def main(
             prefix=f"{cloudstorage_folder_name}/"
         )
 
+        # initialize a dict to track column metadata
+        column_metadata_dict = {}
+
         # loop through records
         for i in range(0, url_list_len, source_load_record_batch_count):
 
@@ -90,11 +94,11 @@ def main(
             data_df_module_path = f"{import_path}.get_data_df"
             data_df_module = importlib.import_module(f"{data_df_module_path}")
             data_df = data_df_module.main(
-                url_list=url_list
+                url_list=url_list_batch
             )
 
             # check if dataframe is not empty
-            if data_df.empty != True:
+            if not data_df.empty:
 
                 # upload to cloud storage
                 cloudstorage_object_name = f"{cloudstorage_object_name_prefix}__{today_str}__{batch_number_fmt}.json"
@@ -104,6 +108,35 @@ def main(
                     bucket_name=cloudstorage_bucket_name,
                     object_path=cloudstorage_object_path
                 )
+
+                # capture column data types
+                for col in data_df.columns:
+
+                    # retrieve data types
+                    python_data_type = str(data_df[col].dtype).lower()
+                    bigquery_data_type = map_python_type_to_bq(data_type=python_data_type)
+
+                    # check if columns does not exist in metadata
+                    if col not in column_metadata_dict:
+                        column_metadata_dict[col] = {
+                            'column_name': col,
+                            'python_data_type': python_data_type,
+                            'bigquery_data_type': bigquery_data_type,
+                        }
+
+                    # otherwise, check the datatypes of columns already seen
+                    else:
+                        python_data_type_existing = column_metadata_dict[col]['python_data_type']
+                        
+                        # if data type mismatch, cast to string
+                        if python_data_type_existing != python_data_type:
+                            logging.warning(f"Column {col} has inconsistent data type across batches: existing ({python_data_type_existing}) versus new ({python_data_type}) --> casting to string.")
+                            column_metadata_dict[col]['python_data_type'] = 'string'
+                            column_metadata_dict[col]['bigquery_data_type'] = 'STRING'
+
+        # convert column metadata to list
+        data_df_column_list = list(column_metadata_dict.values())
+        logging.info(f"Column metadata: {data_df_column_list}")
 
         # check cloud storage file(s) existence
         cloud_storage_objects_list = get_cloud_storage_objects(
