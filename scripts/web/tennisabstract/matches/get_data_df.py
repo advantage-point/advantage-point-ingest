@@ -52,10 +52,8 @@ def main(
             # create dataframe
             match_data_df = DataFrame.from_records(match_data_list)
 
-            # replace nulls with empty strings
-            match_data_df = match_data_df.fillna("")
-
-            # cast columns to string
+            # stringify all columns
+            match_data_df = match_data_df.applymap(lambda x: "" if x is None else str(x))
             match_data_df = match_data_df.astype("string")
 
             return match_data_df
