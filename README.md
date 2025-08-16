@@ -1,12 +1,15 @@
 # AdvantagePoint Data Ingestion Architecture
 
-This project implements a lightweight, serverless ingestion pipeline using Google Cloud Platform (GCP). The design prioritizes **simplicity**, **low cost**, and **scalability** for future growth.
+This ingestion framework implements a lightweight, serverless ingestion pipeline using Google Cloud Platform (GCP). The design prioritizes **simplicity**, **low cost**, and **scalability** for future growth.
 
 ---
 
 ## Overview
 
-The system ingests data from external sources (e.g., Web, APIs or Excel files) on a scheduled basis and writes it to BigQuery.
+The system ingests data from external sources (e.g., Web, APIs or Excel files) on a regular basis and writes it to BigQuery. The overall flow is:
+- BigQuery control tables contain a list of entities from each source to ingest as well as additional parameters/configurations for use during data ingestion.
+- While ingestion methods may vary source to source, the process extracts data from source and writes it to Google Cloud Storage.
+- The data is then written from Cloud Storage into BigQuery, handling any change detection in columns (add, alter) and rows (inserts, updates, deletes).
 
 ---
 
