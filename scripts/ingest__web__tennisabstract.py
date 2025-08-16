@@ -61,7 +61,7 @@ def main(
         # get url list
         url_list_module_path = f"{import_path}.get_url_list"
         url_list_module = importlib.import_module(f"{url_list_module_path}")
-        url_list = url_list_module.main()
+        url_list = url_list_module.main()[:10]
         url_list_len = len(url_list)
 
         # create cloud storage properties
