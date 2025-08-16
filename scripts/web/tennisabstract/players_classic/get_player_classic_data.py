@@ -1,5 +1,5 @@
-from scripts.web.tennisabstract.players.get_player_data_scraped import (
-    get_player_data_scraped_test as get_player_data_scraped,
+from scripts.web.tennisabstract.players_classic.get_player_classic_data_scraped import (
+    get_player_classic_data_scraped_test as get_player_classic_data_scraped,
 )
 from typing import (
     Dict,
@@ -34,29 +34,28 @@ def get_player_data(
             player_name = player_dict['player_name']
             logging.info(f"({i+1}/{len(player_url_list)}) Getting player data for player: {player_name}.")
 
-            # get data from player scraping
+            # get data from player classic scraping
             try:
-                player_url = player_dict['player_url']
-                logging.info(f"Getting player data from {player_url}.")
-                player_url_scrape_dict = get_player_data_scraped(
-                    player_url=player_url,
+                player_classic_url = player_dict['player_classic_url']
+                logging.info(f"Getting player classic data from {player_classic_url}.")
+                player_classic_url_scrape_dict = get_player_classic_data_scraped(
+                    player_classic_url=player_classic_url,
                     retries=3,
                     delay=1
                 )
             
             except Exception as e:
-                logging.info(f"Error getting player data from {player_url}: {e}.")
-                player_url_scrape_dict = {}
+                logging.info(f"Error getting player classic data from {player_classic_url}: {e}.")
 
             # continue with player data logic if data is returned from scraping
-            if player_url_scrape_dict != {}:
+            if player_classic_url_scrape_dict != {}:
 
                 logging.info(f"Data found for player: {player_name}.")
 
                 # combine player data
                 player_data_dict = {
                     **player_dict,
-                    **player_url_scrape_dict,
+                    **player_classic_url_scrape_dict,
                 }
 
                 # append to list
