@@ -46,11 +46,14 @@ def main(
                 # append to list
                 match_data_list.append(match_data_dict)
 
-        # load data to database
+        # check if list is not empty
         if match_data_list != []:
 
             # create dataframe
             match_data_df = DataFrame.from_records(match_data_list)
+
+            # stringify all values
+            match_data_df = match_data_df.astype("string")
 
             return match_data_df
 

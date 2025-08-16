@@ -1,5 +1,5 @@
 from datetime import datetime
-from scripts.web.tennisabstract.matches.get_match_data import get_match_data
+from scripts.web.tennisabstract.matches.get_data_df import get_match_data
 # from scripts.web.tennisabstract.matches.get_match_data_df import get_match_data_df
 from scripts.web.tennisabstract.matches.get_url_list import main as get_match_url_list
 from utils.bigquery.alter_target_table import alter_target_table
