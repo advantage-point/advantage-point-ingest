@@ -89,7 +89,9 @@ def main(
             # get data
             data_df_module_path = f"{import_path}.get_data_df"
             data_df_module = importlib.import_module(f"{data_df_module_path}")
-            data_df = data_df_module.main()
+            data_df = data_df_module.main(
+                url_list=url_list
+            )
 
             if data_df:
 
