@@ -6,7 +6,7 @@ from typing import (
 )
 from utils.web.make_request import make_request
 
-def get_match_url_list() -> List[Dict]:
+def main() -> List[Dict]:
     """
     Returns list of match urls from source (url)
     """

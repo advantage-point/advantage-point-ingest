@@ -2,8 +2,8 @@ from typing import (
     Dict,
     List,
 )
-from scripts.web.tennisabstract.matches.get_match_url_list import (
-    get_match_url_list,
+from scripts.web.tennisabstract.matches.get_url_list import (
+    main as get_match_url_list,
 )
 from scripts.web.tennisabstract.players.create_player_url import (
     create_player_url,

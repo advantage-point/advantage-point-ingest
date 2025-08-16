@@ -1,9 +1,9 @@
 from google.cloud import storage
-import pandas as pd
+from pandas import DataFrame
 import logging
 
 def upload_df_to_cloud_storage(
-    df: pd.DataFrame,
+    df: DataFrame,
     bucket_name: str,
     object_path: str
 ) -> None:
