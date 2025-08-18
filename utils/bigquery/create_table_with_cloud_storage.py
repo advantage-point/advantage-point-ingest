@@ -1,4 +1,7 @@
 from google.cloud import bigquery
+from typing import (
+    List,
+)
 import logging
 
 def create_table_with_cloud_storage(
@@ -7,16 +10,19 @@ def create_table_with_cloud_storage(
     bigquery_project_id: str,
     bigquery_dataset_id: str,
     bigquery_dataset_location: str,
-    bigquery_table_id: str
+    bigquery_table_id: str,
+    bigquery_schema_field_list: List = [],
 ) -> None:
     
     """
     Arguments:
-        cloudstorage_bucket_name: Cloud Storage bucket name
-        cloudstorage_object_pattern: Cloud Storage object pattern (e.g. 'tmp/matches/20250722/')
-        bigquery_project_id: BigQuery Project ID
-        bigquery_dataset_id: BigQuery dataset ID
-        bigquery_table_id: BigQuery table ID
+    - cloudstorage_bucket_name: Cloud Storage bucket name
+    - cloudstorage_object_pattern: Cloud Storage object pattern (e.g. 'tmp/matches/20250722/')
+    - bigquery_project_id: BigQuery Project ID
+    - bigquery_dataset_id: BigQuery dataset ID
+    - bigquery_table_id: BigQuery table ID
+    - bigquery_schema_field_list: List of column SchemaField objects
+
 
     Loads all GCS files with a specific extension under a prefix into a BigQuery table.
     """
@@ -29,11 +35,19 @@ def create_table_with_cloud_storage(
         # TODO(developer): Set table_id to the ID of the table to create.
         table_fq = f"{bigquery_project_id}.{bigquery_dataset_id}.{bigquery_table_id}"
 
-        job_config = bigquery.LoadJobConfig(
-            source_format=bigquery.SourceFormat.NEWLINE_DELIMITED_JSON,
-            write_disposition='WRITE_APPEND',
-            autodetect=True
-        )
+        # construct job config dict
+        job_config_dict = {
+            "source_format": bigquery.SourceFormat.NEWLINE_DELIMITED_JSON,
+            "write_disposition": "WRITE_APPEND",
+        }
+
+        # add schema/autodetect logic
+        if bigquery_schema_field_list == []:
+            job_config_dict['autodetect'] = True
+        else:
+            job_config_dict['schema'] = bigquery_schema_field_list
+
+        job_config = bigquery.LoadJobConfig(**job_config_dict)
 
         cloudstorage_uri = f"gs://{cloudstorage_bucket_name}/{cloudstorage_object_pattern}"
 

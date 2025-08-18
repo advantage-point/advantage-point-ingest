@@ -1,8 +1,9 @@
 from datetime import datetime
+from utils.bigquery.add_audit_columns import add_audit_columns
 from utils.bigquery.alter_target_table import alter_target_table
+from utils.bigquery.create_schema_field import create_schema_field
 from utils.bigquery.check_table_existence import check_table_existence
 from utils.bigquery.create_table_with_cloud_storage import create_table_with_cloud_storage
-from utils.bigquery.create_target_table import create_target_table_with_cloud_storage
 from utils.bigquery.drop_table import drop_table
 from utils.bigquery.insert_target_table import insert_target_table
 from utils.bigquery.get_control_object_record_full import get_control_object_record_full
@@ -135,8 +136,25 @@ def main(
                             column_metadata_dict[col]['bigquery_data_type'] = 'STRING'
 
         # convert column metadata to list
-        data_df_column_list = list(column_metadata_dict.values())
-        logging.info(f"Column metadata: {data_df_column_list}")
+        column_metadata_list = list(column_metadata_dict.values())
+        logging.info(f"Column metadata: {column_metadata_list}")
+
+        # convert column metadata to bigquery schema field
+        schema_field_list = []
+        for column_metadata_dict in column_metadata_list:
+            # initialize/construct bigquery SchemaField
+            schema_field_dict = {}
+            schema_field_dict['name'] = column_metadata_dict['column_name']
+            schema_field_dict['field_type'] = column_metadata_dict['bigquery_data_type']
+
+            # append to list
+            schema_field_bigquery_object = create_schema_field(
+                schema_field_dict=schema_field_dict
+            )
+            schema_field_list.append(schema_field_bigquery_object)
+
+        logging.info(f"BigQuery column SchemaField list: {schema_field_list}.")
+
 
         # check cloud storage file(s) existence
         cloud_storage_objects_list = get_cloud_storage_objects(
@@ -170,7 +188,8 @@ def main(
                     bigquery_project_id=bigquery_temp_project_id,
                     bigquery_dataset_id=bigquery_temp_dataset_id,
                     bigquery_dataset_location=bigquery_temp_dataset_location,
-                    bigquery_table_id=bigquery_temp_table_id
+                    bigquery_table_id=bigquery_temp_table_id,
+                    bigquery_schema_field_list=schema_field_list
                 )
                 
                 # alter target table
@@ -215,13 +234,20 @@ def main(
             
             else:
                 # otherwise create/load target table
-                create_target_table_with_cloud_storage(
+                create_table_with_cloud_storage(
                     cloudstorage_bucket_name=cloudstorage_bucket_name,
                     cloudstorage_object_pattern=cloudstorage_to_bigquery_object_pattern,
                     bigquery_project_id=bigquery_target_project_id,
                     bigquery_dataset_id=bigquery_target_dataset_id,
                     bigquery_dataset_location=bigquery_target_dataset_location,
-                    bigquery_table_id=bigquery_target_table_id
+                    bigquery_table_id=bigquery_target_table_id,
+                    bigquery_schema_field_list=schema_field_list
+                )
+                # add audit columns
+                add_audit_columns(
+                    project_id=bigquery_target_project_id,
+                    dataset_id=bigquery_target_dataset_id,
+                    table_id=bigquery_target_table_id
                 )
 
         else:
