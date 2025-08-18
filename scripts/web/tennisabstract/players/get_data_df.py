@@ -8,12 +8,12 @@ from typing import (
 )
 import logging
 
-def get_player_data(
-    player_url_list: List[Dict]
+def main(
+    url_list: List[Dict]
 ) -> DataFrame:
     """
     Arguments:
-    - player_url_list: List of player urls
+    - url_list: List of player urls
 
     Create list of player data from list of player urls.
     """
@@ -28,10 +28,10 @@ def get_player_data(
 
         # loop through player urls
         player_data_list = []
-        for i, player_dict in enumerate(player_url_list):
+        for i, player_dict in enumerate(url_list):
 
             player_name = player_dict['player_name']
-            logging.info(f"({i+1}/{len(player_url_list)}) Getting player data for player: {player_name}.")
+            logging.info(f"({i+1}/{len(url_list)}) Getting player data for player: {player_name}.")
 
             # get data from player scraping
             try:
