@@ -7,7 +7,6 @@ from scripts.web.tennisabstract.matches.get_url_list import (
 )
 from scripts.web.tennisabstract.players.create_player_url import (
     create_player_url,
-    create_player_classic_url,
 )
 from utils.python.combine_list_of_dicts import combine_list_of_dicts
 from utils.web.scrape_javascript_var import scrape_javascript_var
@@ -60,13 +59,6 @@ def get_player_url_list() -> List[Dict]:
         )
         player_url_dict['player_url'] = player_url
 
-        # create player classic url
-        player_classic_url = create_player_classic_url(
-            player_name=name,
-            player_gender=gender
-        )
-        player_url_dict['player_classic_url'] = player_classic_url
-
         player_url_list.append(player_url_dict)
 
     return player_url_list
@@ -113,12 +105,5 @@ def get_player_url_list_from_matches() -> List[Dict]:
             player_name=player_url_dict['player_name']
         )
         player_url_dict['player_url'] = player_url
-
-        # create player classic url
-        player_classic_url = create_player_classic_url(
-            player_name=player_url_dict['player_name'],
-            player_gender=player_url_dict['player_gender']
-        )
-        player_url_dict['player_classic_url'] = player_classic_url
         
     return player_url_list
