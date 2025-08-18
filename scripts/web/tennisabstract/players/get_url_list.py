@@ -15,6 +15,12 @@ from utils.web.make_request import make_request
 import ast
 import re
 
+def main():
+
+    # here is where the function can be swapped out
+    player_list = get_player_url_list_from_matches()
+    return player_list
+
 def get_player_url_list() -> List[Dict]:
     """
     Returns list of player urls from source (url)
