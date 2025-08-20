@@ -72,38 +72,40 @@ def get_player_url_list_from_matches() -> List[Dict]:
     match_url_list = get_match_url_list()
 
     # initialize player dicts
-    player_one_url_list = []
-    player_two_url_list = []
+    player_url_list = []
+    player_urls_seen = set()
 
     # loop through match data
     for match_url_dict in match_url_list:
 
-        # create player dicts and append to player lists
-        player_one_url_dict = {
-            'player_name': match_url_dict['match_player_one'].replace('_', ' '),
-            'player_gender': match_url_dict['match_gender'],
-        }
-        player_one_url_list.append(player_one_url_dict)
-        player_two_url_dict = {
-            'player_name': match_url_dict['match_player_two'].replace('_', ' '),
-            'player_gender': match_url_dict['match_gender'],
-        }
-        player_two_url_list.append(player_two_url_dict)
+        # loop through player data
+        player_name_list = [
+            match_url_dict['match_player_one'].replace('_', ' '),
+            match_url_dict['match_player_two'].replace('_', ' ')
+        ]
+        for player_name in player_name_list:
 
-    # combine player lists
-    player_url_list = combine_list_of_dicts(
-        player_one_url_list,
-        player_two_url_list
-    )
+            # get gender
+            player_gender = match_url_dict['match_gender']
 
-    # loop through player list
-    for player_url_dict in player_url_list:
+            # create player url
+            player_url = create_player_url(
+                player_name=player_name,
+                player_gender=player_gender
+            )
 
-        # create url
-        player_url = create_player_url(
-            player_gender=player_url_dict['player_gender'],
-            player_name=player_url_dict['player_name']
-        )
-        player_url_dict['player_url'] = player_url
-        
+            # check if player_url has already been added
+            if player_url not in player_urls_seen:
+
+                # construct and append dict
+                player_url_dict = {
+                    'player_url': player_url,
+                    'player_name': player_name,
+                    'player_gender': player_gender,
+                }
+                player_url_list.append(player_url_dict)
+
+                # add to seen urls
+                player_urls_seen.add(player_url)
+    
     return player_url_list
