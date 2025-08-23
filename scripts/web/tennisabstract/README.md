@@ -17,3 +17,12 @@ The general steps of ingesting TennisAbstract data into Google Cloud Storage are
 4. Write to GCS
     - Data is uploaded to Cloud Storage.
     - Data is written in NDJSON format.
+
+See table below for how certain aspects of the ingestion process differ among entities:
+
+| Entity | About | URL List Logic | Scraping Logic |
+| -- | -- | -- | -- |
+| matches | Match data (including points) | [(script)](./matches/get_url_list.py) Full list retrieved from matches page | [(script)](./matches/get_match_data_scraped.py) HTML values parsed using BeautifulSoup |
+| players | Player data | [(script)](./players/get_url_list.py) List of players retrieved from matches (`match_player_one`, `match_player_two`) | [(script)](./players/get_player_data_scraped.py) Javascript variables parsed from page source |
+| players_classic | Player data from 'classic page' | [(script)](./players_classic/get_url_list.py) List of players retrieved from matches (`match_player_one`, `match_player_two`) | [(script)](./players_classic/get_player_classic_data_scraped.py) Javascript variables parsed from page source |
+| tournaments | Tournament data | [(script)](./tournaments/get_url_list.py) List of tournaments retrieved from matches ( using `match_date`, `match_tournament`, `match_gender`) | [(script)](./tournaments/get_tournament_data_scraped.py) HTML values parsed using BeautifulSoup |
